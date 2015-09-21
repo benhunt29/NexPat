@@ -7,12 +7,44 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var worldFactbook = require('./routes/worldFactbook');
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+
+// Bring Mongoose into the app
+var mongoose = require( 'mongoose' );
+
+// Build the connection string
+var dbURI = 'mongodb://localhost:27017/NextPat';
+
+// Create the database connection
+mongoose.connect(dbURI);
+
+// CONNECTION EVENTS
+// When successfully connected
+mongoose.connection.on('connected', function () {
+  console.log('Mongoose default connection open to ' + dbURI);
+
+});
+
+// If the connection throws an error
+mongoose.connection.on('error',function (err) {
+  console.log('Mongoose default connection error: ' + err);
+
+});
+
+// When the connection is disconnected
+mongoose.connection.on('disconnected', function () {
+  console.log('Mongoose default connection disconnected');
+});
+
+//mongoose.connection.db.collection('WorldFactbook', function(err,collection){
+//  //console.log(collection);
+//});
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -24,6 +56,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/worldFactbook',worldFactbook);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

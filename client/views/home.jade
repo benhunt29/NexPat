@@ -1,3 +1,6 @@
-.jumbotron.text-center
-    h1 Home Page
-    | {{message}}
+h1 {{question}}
+.container
+.row.col-md-12(ng-show="showButtons")
+    div.col-md-6
+        button.btn.btn-lg.btn-success(ng-click='getQuestion(true)') Yes
+        button.btn.btn-lg.btn-danger(ng-click='getQuestion(false)') No

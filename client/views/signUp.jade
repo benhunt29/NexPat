@@ -1,0 +1,23 @@
+form(action="/register" method="post")
+    div(class = "input-group col-md-6")
+        span.input-group-addon#username Username
+        //label.form-control(for="username") Username:
+        input.form-control(type="text" name="username" id="Username" placeholder="username" aria-describedby="username")
+    div(class = "input-group col-md-6")
+        span.input-group-addon#password Password
+        //label.form-control(for="password") Password:
+        input.form-control(type="password" name="password" id="password" placeholder="Password" aria-describedby="password")
+    div(class = "input-group col-md-6")
+        //label.form-control(for="firstName") First Name:
+        span.input-group-addon#firstName First Name
+        input.form-control(type="text" name="firstName" id ="firstName" placeholder="First Name" aria-describedby="firstName")
+    div(class = "input-group col-md-6")
+        //label.form-control(for="lastName") Last Name:
+        span.input-group-addon#lastName Last Name
+        input.form-control(type="text" name="lastName" id ="lastName" placeholder="Last Name" aria-describedby="lastName")
+    div(class = "input-group col-md-6")
+        //label.form-control(for="email") Email Address:
+        span.input-group-addon#email Email Address
+        input.form-control(type="email" name="email" id ="email" placeholder="Email" aria-describedby="email")
+    div(class = "input-group col-md-6")
+        input.form-control(type="submit" value="Sign Up" aria-describedby="signUp")

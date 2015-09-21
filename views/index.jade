@@ -4,16 +4,21 @@ block content
         nav(class="navbar navbar-default")
             div(class="container")
                 div(class="navbar-header")
-                    a(class="navbar-brand" href="/") Angular Routing Example
+                    a(class="navbar-brand" href="/")
+                        h1 NextPat
             ul(class="nav navbar-nav navbar-right")
                 li
                     a(href="/") Home
                 li
+                    a(href="/questionnaire") Questionnaire
+                li
                     a(href="/about") About
                 li
-                    a(href="/contact") Contact
+                    a(href="/help") Help
                 li
-                    a(href="/users") Users
+                    a(href="/signUp") Sign up
+                li
+                    a(href="/login") Login
     #main
         <!-- ng-view will display injected content -->
         div(ng-view)
