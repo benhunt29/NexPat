@@ -420,6 +420,8 @@ var worldFactbookSchema = new Schema({
     }
 });
 
+worldFactbookSchema.index({ "people.languages.text": 'text'});
+
 var WorldFactbook = mongoose.model('WorldFactbook', worldFactbookSchema);
 
 module.exports = WorldFactbook;
