@@ -19,15 +19,21 @@ router.post('/', function(req, res, next) {
 
         results.forEach(function(item,index){
           var returnedCountry = {};
-          returnedCountry.name = item.name.name;
-          returnedCountry.laborAg = item.econ.labor_force_by_occupation.agriculture;
-          returnedCountry.laborInd = item.econ.labor_force_by_occupation.industry;
-          returnedCountry.laborSvc = item.econ.labor_force_by_occupation.services;
+          returnedCountry.countryName = item.name.name;
+          returnedCountry.laborAg = parseFloat(item.econ.labor_force_by_occupation.agriculture);
+          returnedCountry.laborInd = parseFloat(item.econ.labor_force_by_occupation.industry);
+          returnedCountry.laborSvc = parseFloat(item.econ.labor_force_by_occupation.services);
           returnedCountry.climate = item.geo.climate.text;
-          returnedCountry.per_capita_ppp = parseFloat(item.econ.gdp_per_capita_ppp.text.match(/([^\s]+)/)[0].replace(/[^\d\.]/g,''));
+          returnedCountry.per_capita_ppp = item.econ.gdp_per_capita_ppp.text;
+
+          if(returnedCountry.per_capita_ppp) {
+            returnedCountry.per_capita_ppp = parseFloat(returnedCountry.per_capita_ppp.match(/([^\s]+)/)[0].replace(/[^\d\.]/g,''));
+
+        }
+          returnedCountry.per_capita_ppp = parseFloat(returnedCountry.per_capita_ppp);
           returnedCountry.urban_population = parseFloat(item.people.urbanization.urban_population);
           returnedCountry.median_age = parseFloat(item.people.median_age.total);
-          returnedCountry.internetUsage = item.people.population.text/item.comm.internet_users.text;
+          returnedCountry.internetUsage = parseFloat(item.comm.internet_users.text)/parseFloat(item.people.population.text);
           returnedCountries.push(returnedCountry);
 
         });
