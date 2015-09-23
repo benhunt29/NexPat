@@ -8,7 +8,8 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var worldFactbook = require('./routes/worldFactbook');
-var userCountries = require('./routes/userCountries');
+var userCountries = require('./routes/api/userCountries');
+var recommendedCountries = require('./routes/api/recommendedCountries');
 
 var app = express();
 
@@ -58,7 +59,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 app.use('/worldFactbook',worldFactbook);
-app.use('/userCountries',userCountries);
+app.use('/api/userCountries',userCountries);
+app.use('/api/recommendedCountries',recommendedCountries);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
