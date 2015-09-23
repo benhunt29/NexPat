@@ -3,6 +3,7 @@ var Schema = mongoose.Schema;
 
 // create a Mongoose Schema
 var questionnaireSchema = new Schema({
+    username: {type: String, required: true, unique: true},
     questionNumber: { type: String, required: true },
     questionText: { type: String, required: true },
     questionResponse: {type: Boolean, required: true}
