@@ -1,10 +1,10 @@
-form.col-md-12(action="/" method="post")
+form.col-md-12(ng-submit = "submit()")
    div(class = "input-group col-md-6")
       span.input-group-addon#username Username
-      input.form-control(type="text" name="username" id="username" placeholder="Username" aria-describedby="username")
+      input.form-control(type="text" name="username" id="username" placeholder="Username" aria-describedby="username" ng-model = "form.username")
    div(class = "input-group col-md-6")
       span.input-group-addon#password Password
       //label.form-control(for="password") Password:
-      input.form-control(type="password" name="password" id="password" placeholder="Password")
+      input.form-control(type="password" name="password" id="password" placeholder="Password" ng-model = "form.password")
    div(class = "input-group col-md-6")
       input(type="submit" value="Log In")

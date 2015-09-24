@@ -1,10 +1,12 @@
-h1 {{question}}
-div(ng-show="type === 'boolean'")
-    button(ng-click='getQuestion(true)') Yes
-    button(ng-click='getQuestion(false)') No
-div(ng-show="type === 'list'")
-    .col-lg-9
-        .btn-group(data-toggle="buttons")
-            label.btn.btn-default(ng-repeat="item in list") {{item}}
+div(ng-hide="user.username")
+    h1 {{question}}
+    div(ng-show="type === 'boolean'")
+        button(ng-click='getQuestion(true)') Yes
+        button(ng-click='getQuestion(false)') No
+    div(ng-show="type === 'list'")
+        .col-lg-9
+            .btn-group(data-toggle="buttons")
+                label.btn.btn-default(ng-repeat="item in list") {{item}}
                 input(type="radio" value="item" ng-click='getQuestion(answer)')
+div(ng-show="user.username") Countries List
 

@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-var WorldFactbook = require('../models/WorldFactbook');
-var countriesList = require('../modules/countryData');
+var WorldFactbook = require('../../models/WorldFactbook');
+var countriesList = require('../../modules/countryData');
 
 //mongoose.collection.createIndex({"people.languages.text":"text"});
 /* POST users listing. */

@@ -1,7 +1,7 @@
 extends layout
 block content
     header
-        nav(class="navbar navbar-default")
+        nav(class="navbar navbar-default" ng-controller="navCtrl")
             div(class="container")
                 div(class="navbar-header")
                     a(class="navbar-brand" href="/")
@@ -18,7 +18,10 @@ block content
                 li
                     a(href="/signUp") Sign up
                 li
-                    a(href="/login") Login
+                    a(href="/login") Sign in
+                li
+                    a(ng-click="logout()") Sign out
+
     #main
         <!-- ng-view will display injected content -->
         div(ng-view)
