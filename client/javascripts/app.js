@@ -102,7 +102,7 @@ app.controller('helpController',['$scope', function($scope){
     $scope.message = "I'm a help page that currently doesn't help at all";
 }]);
 
-app.controller('questionnaireController',['$scope','$location', function($scope,$location){
+app.controller('questionnaireController',['$rootScope','$scope','$location', '$http', function($rootScope,$scope,$location,$http){
 
     var questions = [{question: "Are you interested in living abroad?",type:'boolean'},
         {question:"Do you speak any languages besides English?",type:'boolean'},
@@ -127,6 +127,19 @@ app.controller('questionnaireController',['$scope','$location', function($scope,
             questionNum++;
         }
     };
+
+    $scope.addCountry = function(){
+
+        //console.log($rootScope.username);
+        //$http.post('/api/userCountries',{username: $rootScope.user.username}).
+        //    then(function(response){
+        //        $scope.userCountries = response.userCountries;
+        //    });
+        $http.post('/api/userCountries',{username: $rootScope.user.username,userCountries: ['france','germany','spain']}).
+            then(function(response){
+                $scope.userCountries = response.userCountries;
+            })
+    }
 
 }]);
 

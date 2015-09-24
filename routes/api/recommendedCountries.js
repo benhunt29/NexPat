@@ -7,45 +7,37 @@ var recommendedCountries = require('../../models/recommendedCountries');
 /* POST users listing. */
 router.post('/', function(req, res, next) {
 
-    var obj = req.body;
-    var id = obj._id;
-    if (id) {
+  var obj = req.body;
+  var id = obj.recommendedCountries;
 
-      recommendedCountries.findById(id, function(err,userRecommendedCountries){
+  recommendedCountries.findOne({username: obj.username}, function (err, userRecommendations) {
 
-        if(err){
+    if (err) {
+      next(err);
+    } else if (userCountryList) {
 
+      userRecommendations.recommendedCountries = obj.recommendedCountries;
+      userRecommendations.save(function (err) {
+
+        if (err) {
           next(err);
-
-        }else{
-
-          userRecommendedCountries.recommendedCountries = obj.recommendedCountries;
-          userRecommendedCountries.save(function(err){
-
-            if(err) {
-              next(err);
-
-            }else {
-
-              res.send(JSON.stringify(obj));
-            }
-
-          });
+        } else {
+          res.send(JSON.stringify(obj));
         }
       });
 
-    }else{
+    } else {
+      var newUserRecommendations = new recommendedCountries(req.body);
 
-      var userRecommendedCountries = new recommendedCountries(req.body);
-
-      userRecommendedCountries.save(function(err){
-        if(err) {
+      newUserRecommendations.save(function (err) {
+        if (err) {
           next(err);
-        }else {
+        } else {
           res.send(JSON.stringify(obj));
         }
       });
     }
+  })
 });
 
 module.exports = router;

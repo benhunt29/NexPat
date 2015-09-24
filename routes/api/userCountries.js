@@ -7,45 +7,38 @@ var userCountries = require('../../models/userCountries');
 /* POST users listing. */
 router.post('/', function(req, res, next) {
 
-    var obj = req.body;
-    var id = obj._id;
-    if (id) {
+  var obj = req.body;
+  var id = obj.userCountries;
+  console.log(obj);
 
-      userCountries.findById(id, function(err,userCountryList){
+  userCountries.findOne({username: obj.username}, function (err, userCountryList) {
 
-        if(err){
+    if (err) {
+      next(err);
+    } else if (userCountryList) {
 
+      userCountryList.userCountries = obj.userCountries;
+      userCountryList.save(function (err) {
+
+        if (err) {
           next(err);
-
-        }else{
-
-          userCountryList.userCountries = obj.userCountries;
-          userCountryList.save(function(err){
-
-            if(err) {
-              next(err);
-
-            }else {
-
-              res.send(JSON.stringify(obj));
-            }
-
-          });
+        } else {
+          res.send(JSON.stringify(obj));
         }
       });
 
-    }else{
+    } else {
+      var newUserCountryList = new userCountries(req.body);
 
-      var userCountryList = new userCountries(req.body);
-
-      userCountryList.save(function(err){
-        if(err) {
+      newUserCountryList.save(function (err) {
+        if (err) {
           next(err);
-        }else {
+        } else {
           res.send(JSON.stringify(obj));
         }
       });
     }
+  })
 });
 
 module.exports = router;

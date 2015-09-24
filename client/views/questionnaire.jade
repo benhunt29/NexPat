@@ -8,5 +8,6 @@ div(ng-hide="user.username")
             .btn-group(data-toggle="buttons")
                 label.btn.btn-default(ng-repeat="item in list") {{item}}
                 input(type="radio" value="item" ng-click='getQuestion(answer)')
-div(ng-show="user.username") Countries List
+div(ng-show="user.username" ng-click="addCountry()") Countries List
+    div {{userCountries}}
 
