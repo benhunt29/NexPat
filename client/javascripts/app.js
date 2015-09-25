@@ -224,7 +224,7 @@ app.factory('questionnaire', ['$q', '$location', 'authService', function ($q, $l
                 answerOptions: ['Agriculture', 'Industry', 'Services']
             },
             {
-                question: 'What climate would you prefer?',
+                question: 'What climate(s) would you prefer?',
                 type: 'list',
                 answerOptions: ['Temperate', 'Mediterranean', 'Tropical', 'Arid', 'Desert', 'Maritime', 'Wet']
             },
@@ -260,8 +260,15 @@ app.factory('questionnaire', ['$q', '$location', 'authService', function ($q, $l
             countries = [];
             countriesToSearch.forEach(function(country,index) {
                 var score = 0;
-                labor = labor;
-                climate = climate;
+                var laborPercent = country.labor[questionnaireAnswers.question2];
+                //if user's specified industry is more than 75% of the country's workforce, set score to 10
+                var laborScore = laborPercent/7.5 > 10 ? 10 : laborPercent;
+
+                //create Regular Expression to check climate string for climate answers
+                var climateString = new RegExp(questionnaireAnswers.question3.join('|'));
+                //if climate string contains one of the climate answers, set score to 10
+                var climateScore = country.climate.match(climateString) != null ? 10: 0;
+
                 perCapitaPPP;
                 urbanPopulation;
                 largestCityPop;
