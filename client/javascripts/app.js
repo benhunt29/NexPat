@@ -102,7 +102,7 @@ app.controller('helpController',['$scope', function($scope){
     $scope.message = "I'm a help page that currently doesn't help at all";
 }]);
 
-app.controller('questionnaireController',['$rootScope','$scope','$location', '$http', function($rootScope,$scope,$location,$http){
+app.controller('questionnaireController',['questionnaire','$rootScope','$scope','$location', '$http', function(questionnaire,$rootScope,$scope,$location,$http){
 
     var questionNum = 1;
     $scope.type = questions[0].type;
@@ -211,12 +211,12 @@ app.factory('authInterceptor', ['$q', '$location', 'authService', function ($q, 
     };
 }]);
 
-app.factory('questionnaire', ['$q', '$location', 'authService', function ($q, $location, authService) {
+app.factory('questionnaire', function () {
     return {
         questions: [
             {
                 question: "What language(s) do you speak?", type: 'list',
-                answerOptions: ['Adyghe', 'Albanian', 'Aragonese', 'Armenian', 'Aromanian', 'Arpitan', 'Asturian', 'Avar', 'Azerbaijani', 'Bashkir', 'Basque', 'Belarusian', 'Bosnian', 'Breton', 'Bulgarian', 'Catalan', 'Chechen', 'Chuvash', 'Cornish', 'Corsican', 'Crimean', 'Tatar', 'Croatian', 'Czech', 'Danish', 'Dutch', 'English', 'Erzya', 'Estonian', 'Faroese', 'Finnish', 'French', 'Frisian', 'Gagauz', 'Galician', 'Gallo', 'Georgian', 'German', 'Greek', 'Hungarian', 'Icelandic', 'Ingrian', 'Irish', 'Italian', 'Kabardian', 'Kashubian', 'Kazakh', 'Ladin', 'Latin', 'Latvian', 'Laz', 'Lithuanian', 'Luxembourgish', 'Macedonian', 'Maltese', 'Manx', 'Mari', 'Mingrelian', 'Mirandese', 'Montenegrin', 'Norwegian', 'Occitan', 'Ossetian', 'Picard', 'Polish', 'Portuguese', 'Romani', 'Romanian', 'Romansh', 'Russian', 'Sami', 'Sardinian', 'Scots', 'Scottish' 'Gaelic', 'Serbian', 'Silesian', 'Slovak', 'Slovene', 'Sorbian', 'Spanish', 'Svan', 'Swedish', 'Tabasaran', 'Tatar', 'Turkish', 'Ukrainian', 'Vepsian', 'Võro', 'Walloon', 'Welsh', 'Wymysorys']
+                answerOptions: ['Adyghe', 'Albanian', 'Aragonese', 'Armenian', 'Aromanian', 'Arpitan', 'Asturian', 'Avar', 'Azerbaijani', 'Bashkir', 'Basque', 'Belarusian', 'Bosnian', 'Breton', 'Bulgarian', 'Catalan', 'Chechen', 'Chuvash', 'Cornish', 'Corsican', 'Crimean', 'Tatar', 'Croatian', 'Czech', 'Danish', 'Dutch', 'English', 'Erzya', 'Estonian', 'Faroese', 'Finnish', 'French', 'Frisian', 'Gagauz', 'Galician', 'Gallo', 'Georgian', 'German', 'Greek', 'Hungarian', 'Icelandic', 'Ingrian', 'Irish', 'Italian', 'Kabardian', 'Kashubian', 'Kazakh', 'Ladin', 'Latin', 'Latvian', 'Laz', 'Lithuanian', 'Luxembourgish', 'Macedonian', 'Maltese', 'Manx', 'Mari', 'Mingrelian', 'Mirandese', 'Montenegrin', 'Norwegian', 'Occitan', 'Ossetian', 'Picard', 'Polish', 'Portuguese', 'Romani', 'Romanian', 'Romansh', 'Russian', 'Sami', 'Sardinian', 'Scots', 'Scottish','Gaelic', 'Serbian', 'Silesian', 'Slovak', 'Slovene', 'Sorbian', 'Spanish', 'Svan', 'Swedish', 'Tabasaran', 'Tatar', 'Turkish', 'Ukrainian', 'Vepsian', 'Võro', 'Walloon', 'Welsh', 'Wymysorys']
             },
             {
                 question: 'What field do you work in?',
@@ -231,12 +231,7 @@ app.factory('questionnaire', ['$q', '$location', 'authService', function ($q, $l
             {
                 question: 'What is the ideal size for the largest metropolitan area?',
                 type: 'list',
-                answerOptions: ['Small (<100,000', 'Medium (100,000-1 million', 'Large (>1 million)']
-            },
-            {
-                question: 'What is your ideal size for the largest metropolitan area?',
-                type: 'list',
-                answerOptions: ['Small (<100,000', 'Medium (100,000-1 million', 'Large (>1 million)']
+                answerOptions: ['Small (<100,000)', 'Medium (100,000-1 million)', 'Large (>1 million)']
             },
             {
                 question: 'Would you like the population distribution to be mostly urban?',
@@ -258,22 +253,136 @@ app.factory('questionnaire', ['$q', '$location', 'authService', function ($q, $l
         determineRecommendations: function(questionnaireAnswers,countriesToSearch){
 
             countries = [];
+
+            function getProportionalScore(upperLimit,lowerLimit,value){
+                if (value >= lowerLimit && value <= upperLimit){
+                    return 10;
+                }else{
+                    var lowScore = 1 - Math.abs(value - lowerLimit)/lowerLimit;
+                    var highScore = 1 - Math.abs(value - lowerLimit)/upperLimit;
+                    return 10*(Math.min(lowScore,highScore));
+                }
+            }
+
             countriesToSearch.forEach(function(country,index) {
                 var score = 0;
                 var laborPercent = country.labor[questionnaireAnswers.question2];
                 //if user's specified industry is more than 75% of the country's workforce, set score to 10
-                var laborScore = laborPercent/7.5 > 10 ? 10 : laborPercent;
+                var laborScore = laborPercent/7.5 > 10 ? 10 : laborPercent/10;
 
                 //create Regular Expression to check climate string for climate answers
                 var climateString = new RegExp(questionnaireAnswers.question3.join('|'));
                 //if climate string contains one of the climate answers, set score to 10
                 var climateScore = country.climate.match(climateString) != null ? 10: 0;
 
-                perCapitaPPP;
-                urbanPopulation;
-                largestCityPop;
-                medianAge;
-                internetUsagePerCapita;
+
+                //if (country.perCapitaPPP > lowerLimit && country.perCapitaPPP < upperLimit){
+                //    perCapitaPPPScore = 10;
+                //}else{
+                //    var lowPerCapitaPPPScore = 1 - Math.abs(country.perCapitaPPP - lowerLimit)/lowerLimit;
+                //    var highPerCapitaPPPScore = 1 - Math.abs(country.perCapitaPPP - lowerLimit)/upperLimit;
+                //    perCapitaPPPScore = 10*(Math.min(lowLargestCityPopScore,highLargestCityPopScore));
+                //}
+
+                var userLargestCityPop = questionnaireAnswers.question4;
+                switch(userLargestCityPop){
+                    case 'Small (<100,000)':
+                        lowerLimit = 0;
+                        upperLimit = 1E5;
+                        break;
+                    case 'Medium (100,000-1 million)':
+                        lowerLimit = 1E5;
+                        upperLimit = 1E6;
+                        break;
+                    case 'Large (>1 million)':
+                        lowerLimit = 1E6;
+                        upperLimit = 1E20;
+                        break;
+                    default:
+                        break;
+                }
+                var largestCityPopScore = getProportionalScore(lowerLimit,upperLimit,country.largestCityPop);
+                //if (country.largestCityPop > lowerLimit && country.largestCityPop < upperLimit){
+                //    largestCityPopScore = 10;
+                //}else{
+                //    var lowLargestCityPopScore = 1 - Math.abs(country.largestCityPop - lowerLimit)/lowerLimit;
+                //    var highLargestCityPopScore = 1 - Math.abs(country.largestCityPop-upperLimit)/upperLimit;
+                //
+                //    largestCityPopScore = 10*(Math.min(lowLargestCityPopScore,highLargestCityPopScore));
+                //}
+                var userUrbanPopulation = questionnaireAnswers.question5;
+                var urbanPopulationScore;
+                if(userUrbanPopulation){
+                    urbanPopulationScore = country.urbanPopulation > 50 ? 10 : 10*country.urbanPopulation/50;
+                }else{
+                    urbanPopulationScore = country.urbanPopulation < 50 ? 10 : 10*50/country.urbanPopulation;
+                }
+
+                var userMedianAge = questionnaireAnswers.question6;
+                switch(userMedianAge){
+                    case '20-30yrs':
+                        lowerLimit = 0;
+                        upperLimit = 30;
+                        break;
+                    case '30-40yrs':
+                        lowerLimit = 30;
+                        upperLimit = 40;
+                        break;
+                    case '40+years':
+                        lowerLimit = 40;
+                        upperLimit = 150;
+                        break;
+                    default:
+                        break;
+                }
+
+                var userPerCapitaPPP = questionnaireAnswers.question7;
+                var upperLimit, lowerLimit;
+
+                switch(userPerCapitaPPP){
+                    case 'High':
+                        lowerLimit = 60000;
+                        upperLimit = 1E10;
+                        break;
+                    case 'Average':
+                        lowerLimit = 30000;
+                        upperLimit = 60000;
+                        break;
+                    case 'Low':
+                        lowerLimit = 0;
+                        upperLimit = 30000;
+                        break;
+                    default:
+                        break;
+                }
+                var perCapitaPPPScore = getProportionalScore(lowerLimit,upperLimit,country.perCapitaPPP);
+
+
+                var medianAgeScore = getProportionalScore(lowerLimit,upperLimit,country.medianAge);
+
+                var userInternetUsagePerCapita = questionnaireAnswers.question8;
+                switch(userInternetUsagePerCapita){
+                    case '<25%':
+                        lowerLimit = 0;
+                        upperLimit = 25;
+                        break;
+                    case '25%-50%':
+                        lowerLimit = 25;
+                        upperLimit = 50;
+                        break;
+                    case '50%-75%':
+                        lowerLimit = 50;
+                        upperLimit = 75;
+                        break;
+                    default:
+                        lowerLimit = 75;
+                        upperLimit = 100;
+                        break;
+                }
+
+                var internetUsageScore = getProportionalScore(lowerLimit,upperLimit,country.internetUsagePerCapita);
+
+                score = score + laborScore + climateScore + largestCityPopScore + urbanPopulationScore + perCapitaPPPScore + medianAgeScore + internetUsageScore;
                 country.score = score;
                 countries.push(country);
             });
@@ -294,8 +403,7 @@ app.factory('questionnaire', ['$q', '$location', 'authService', function ($q, $l
                     return 0;
                 });
 
-                var recommendedCountries = countries.slice(0,4);
+                return countries.slice(0,4);
         }
-
     };
-}]);
+});
