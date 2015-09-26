@@ -91,7 +91,7 @@ app.controller('loginController', ['$scope', '$http', 'authService', '$location'
     };
 }]);
 
-app.controller('navCtrl', ['authService','$scope','$rootScope','$location', function(authService, $scope,$rootScope, $location){
+app.controller('navCtrl', ['authService','$scope','$rootScope','$location','$http', function(authService, $scope,$rootScope, $location,$http){
     $rootScope.user = authService.getUser();
 
     if($rootScope.user && $rootScope.user.username){
@@ -99,6 +99,11 @@ app.controller('navCtrl', ['authService','$scope','$rootScope','$location', func
     }
 
     $scope.logout = function(){
+        $http.get('/api/questionnaire/'+$rootScope.user.username);
+        $http.get('/api/logout').
+            then(function(response){
+                console.log(response);
+            });
         authService.logout();
         $rootScope.user = authService.getUser();
         $location.path("/login");

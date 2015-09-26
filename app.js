@@ -8,6 +8,7 @@ var passport = require('passport');
 var index = require('./routes/index');
 var register = require('./routes/api/register');
 var login = require('./routes/api/login');
+var logout = require('./routes/api/logout');
 var worldFactbook = require('./routes/api/worldFactbook');
 var userCountries = require('./routes/api/userCountries');
 var recommendedCountries = require('./routes/api/recommendedCountries');
@@ -20,6 +21,8 @@ var Users = require('./models/users');
 //Passport Strategies
 var LocalStrategy = require('passport-local').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var GOOGLE_CLIENT_ID = '466944027920-6l7mdc2q5nghcpmkqrv10lphoe3f78v8.apps.googleusercontent.com';
+var GOOGLE_CLIENT_SECRET = 'bBCiwuKRLS_27tvHIU_0dFQM';
 var JwtStrategy = require('passport-jwt').Strategy;
 var opts = {};
 opts.secretOrKey = 'supersecret';
@@ -141,9 +144,9 @@ passport.use('local',new LocalStrategy({ passReqToCallback:true,
     }));
 
 passport.use(new GoogleStrategy({
-        clientID: '466944027920-6l7mdc2q5nghcpmkqrv10lphoe3f78v8.apps.googleusercontent.com',
-        clientSecret: 'bBCiwuKRLS_27tvHIU_0dFQM',
-        callbackURL: "http://127.0.0.1:3000/auth/google/callback"
+        clientID: GOOGLE_CLIENT_ID,
+        clientSecret: GOOGLE_CLIENT_SECRET,
+        callbackURL: "http://127.0.0.1:3000/api/login/auth/google/callback"
     },
     function(accessToken, refreshToken, profile, done) {
         User.findOrCreate({ googleId: profile.id }, function (err, user) {
@@ -159,6 +162,7 @@ app.use('/api/worldFactbook', worldFactbook);
 app.use('/api/userCountries', userCountries);
 app.use('/api/recommendedCountries', recommendedCountries);
 app.use('/api/login', login);
+app.use('api/logout',logout);
 app.use('/api/questionnaire',questionnaire);
 
 
