@@ -9,25 +9,21 @@ var questionnaireSchema = new Schema({
         question2: String,
         question3: String,
         question4: String,
-        question5: String,
+        question5: Boolean,
         question6: String,
         question7: String,
         question8: String
     },
-    dateUpdated: Date
+    updatedAt: Date
 });
 
-userSchema.pre('save', function(next){
+questionnaireSchema.pre('save', function(next){
     // get the current date
     var currentDate = new Date();
 
     // change the updated_at field to the current date
-    this.updated_at = currentDate;
+    this.updatedAt = currentDate;
 
-    // if created_at hasn't be set, add that as well
-    if(!this.created_at){
-        this.created_at = currentDate;
-    }
     next();
 });
 

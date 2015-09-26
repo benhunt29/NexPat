@@ -1,19 +1,22 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-var userCountries = require('../../models/userCountries');
+var Questionnaire = require('../../models/questionnaire');
 
 //mongoose.collection.createIndex({"people.languages.text":"text"});
-
 router.get('/:username', function(req, res, next) {
   var obj = req.params;
 
-  userCountries.findOne({username: obj.username}, function (err, userCountries) {
+  Questionnaire.findOne({username: obj.username}, function (err, userQuestionnaire) {
 
     if (err) {
       next(err);
     } else {
-      res.json(userCountries.userCountries);
+      if(userQuestionnaire){
+        res.json(userQuestionnaire.questionResponses);
+      }else{
+        res.sendStatus(200);
+      }
     }
   });
 });
@@ -22,17 +25,15 @@ router.get('/:username', function(req, res, next) {
 router.post('/', function(req, res, next) {
 
   var obj = req.body;
-  var id = obj.userCountries;
-  console.log(obj);
 
-  userCountries.findOne({username: obj.username}, function (err, userCountryList) {
+  Questionnaire.findOne({username: obj.username}, function (err, userQuestionnaire) {
 
     if (err) {
       next(err);
-    } else if (userCountryList) {
+    } else if (userQuestionnaire) {
 
-      userCountryList.userCountries = obj.userCountries;
-      userCountryList.save(function (err) {
+      userQuestionnaire.questionResponses = obj.questionResponses;
+      userQuestionnaire.save(function (err) {
 
         if (err) {
           next(err);
@@ -42,9 +43,9 @@ router.post('/', function(req, res, next) {
       });
 
     } else {
-      var newUserCountryList = new userCountries(req.body);
+      var newUserQuestionnaire = new Questionnaire(req.body);
 
-      newUserCountryList.save(function (err) {
+      newUserQuestionnaire.save(function (err) {
         if (err) {
           next(err);
         } else {

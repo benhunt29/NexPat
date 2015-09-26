@@ -11,6 +11,7 @@ var login = require('./routes/api/login');
 var worldFactbook = require('./routes/api/worldFactbook');
 var userCountries = require('./routes/api/userCountries');
 var recommendedCountries = require('./routes/api/recommendedCountries');
+var questionnaire = require('./routes/api/questionnaire');
 var Users = require('./models/users');
 //var questionnaire = require('./routes/api/questionnaire');
 //var session = require('express-session');
@@ -144,6 +145,7 @@ app.use('/api/worldFactbook', worldFactbook);
 app.use('/api/userCountries', userCountries);
 app.use('/api/recommendedCountries', recommendedCountries);
 app.use('/api/login', login);
+app.use('/api/questionnaire',questionnaire);
 
 
 // catch 404 and forward to error handler

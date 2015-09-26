@@ -22,7 +22,7 @@ router.post('/', function(req, res, next) {
         if (err) {
           next(err);
         } else {
-          res.send(JSON.stringify(obj));
+          res.sendStatus(200);
         }
       });
 
@@ -33,7 +33,7 @@ router.post('/', function(req, res, next) {
         if (err) {
           next(err);
         } else {
-          res.send(JSON.stringify(obj));
+          res.sendStatus(200);
         }
       });
     }

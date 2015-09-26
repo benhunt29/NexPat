@@ -1,13 +1,16 @@
-div(ng-hide="user.username")
+div(ng-hide="recommendations")
     h1 {{question}}
     div(ng-show="type === 'boolean'")
-        button(ng-click='getQuestion(true)') Yes
-        button(ng-click='getQuestion(false)') No
+        button(ng-click='data.answer=true;getQuestion(true);logAnswer()') Yes
+        button(ng-click='data.answer=false;getQuestion(false);logAnswer()') No
     div(ng-show="type === 'list'")
         .col-lg-9
-            .btn-group(data-toggle="buttons")
-                label.btn.btn-default(ng-repeat="item in list") {{item}}
-                input(type="radio" value="item" ng-click='getQuestion(answer)')
+            .btn-group(data-toggle="buttons" ng-repeat="item in list")
+                label.btn.btn-default {{item}}
+                input(type="radio" value = "{{item}}" ng-model="data.answer" ng-change="getQuestion();logAnswer()" )
+
 div(ng-show="user.username" ng-click="addCountry()") Countries List
     div {{userCountries}}
+div(ng-repeat="country in recommendations")
+    p {{country.countryName}}
 

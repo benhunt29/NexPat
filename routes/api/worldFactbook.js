@@ -7,10 +7,8 @@ var countriesList = require('../../modules/countryData');
 //mongoose.collection.createIndex({"people.languages.text":"text"});
 /* POST users listing. */
 router.post('/', function(req, res, next) {
-
-  if (req.body.languageOption === 'true'){
+  if (req.body.languageOption){
     var query = req.body.language;
-
 
     WorldFactbook.find({$text:{$search:query}},function(err,results){
 

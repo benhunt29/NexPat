@@ -104,13 +104,46 @@ app.controller('helpController',['$scope', function($scope){
 
 app.controller('questionnaireController',['questionnaire','$rootScope','$scope','$location', '$http', function(questionnaire,$rootScope,$scope,$location,$http){
 
-    var questionNum = 1;
-    $scope.type = questions[0].type;
-    $scope.question = questions[0].question;
-    $scope.getQuestion = function(answer){
+
+
+    var questions = questionnaire.questions;
+    var questionResponses = {};
+    var userQuestionnaire = {};
+    var recommendations;
+    var questionNum = 0;
+    $scope.data = {
+        answer: ''
+        };
+
+    $http.get('/api/questionnaire/'+$rootScope.user.username).
+        then(function(userAnswers){
+            if(typeof userAnswers.data == 'object'){
+                $http.post('/api/worldFactbook',{languageOption:true,language:userAnswers.data.question1}).
+                    then(function(countriesToSearch){
+                        $scope.recommendations = questionnaire.determineRecommendations(userAnswers.data,countriesToSearch.data);
+                });
+            }else{
+                $scope.getQuestion();
+            }
+        });
+
+    //$scope.type = questions[0].type;
+    //console.log(questions[0].answerOptions);
+    //$scope.question = questions[0].question;
+    //$scope.list = questions[0].answerOptions;
+    $scope.getQuestion = function(){
 
         if(questionNum==questions.length){
+            questionNum++;
+            questionResponses["question"+(questionNum-1)] = $scope.data.answer;
             $scope.question = 'Your list is being generated!';
+            userQuestionnaire.username = $rootScope.user.username;
+            userQuestionnaire.questionResponses = questionResponses;
+            $http.post('/api/questionnaire',userQuestionnaire);
+            $http.post('/api/worldFactbook',{languageOption:true,language:questionResponses.question1}).
+                then(function(countriesToSearch){
+                    $scope.recommendations = questionnaire.determineRecommendations(questionResponses,countriesToSearch.data);
+                });
             $scope.type = '';
         }else{
             $scope.question = questions[questionNum].question;
@@ -119,10 +152,11 @@ app.controller('questionnaireController',['questionnaire','$rootScope','$scope',
             if($scope.type == 'list'){
                 $scope.list = questions[questionNum].answerOptions;
             }
-            questions[questionNum-1].answer = answer;
-
             questionNum++;
         }
+    };
+    $scope.logAnswer = function(){
+        questionResponses["question"+(questionNum-1)] = $scope.data.answer;
     };
 
     $scope.addCountry = function(){
@@ -216,7 +250,7 @@ app.factory('questionnaire', function () {
         questions: [
             {
                 question: "What language(s) do you speak?", type: 'list',
-                answerOptions: ['Adyghe', 'Albanian', 'Aragonese', 'Armenian', 'Aromanian', 'Arpitan', 'Asturian', 'Avar', 'Azerbaijani', 'Bashkir', 'Basque', 'Belarusian', 'Bosnian', 'Breton', 'Bulgarian', 'Catalan', 'Chechen', 'Chuvash', 'Cornish', 'Corsican', 'Crimean', 'Tatar', 'Croatian', 'Czech', 'Danish', 'Dutch', 'English', 'Erzya', 'Estonian', 'Faroese', 'Finnish', 'French', 'Frisian', 'Gagauz', 'Galician', 'Gallo', 'Georgian', 'German', 'Greek', 'Hungarian', 'Icelandic', 'Ingrian', 'Irish', 'Italian', 'Kabardian', 'Kashubian', 'Kazakh', 'Ladin', 'Latin', 'Latvian', 'Laz', 'Lithuanian', 'Luxembourgish', 'Macedonian', 'Maltese', 'Manx', 'Mari', 'Mingrelian', 'Mirandese', 'Montenegrin', 'Norwegian', 'Occitan', 'Ossetian', 'Picard', 'Polish', 'Portuguese', 'Romani', 'Romanian', 'Romansh', 'Russian', 'Sami', 'Sardinian', 'Scots', 'Scottish','Gaelic', 'Serbian', 'Silesian', 'Slovak', 'Slovene', 'Sorbian', 'Spanish', 'Svan', 'Swedish', 'Tabasaran', 'Tatar', 'Turkish', 'Ukrainian', 'Vepsian', 'Võro', 'Walloon', 'Welsh', 'Wymysorys']
+                answerOptions: ['Adyghe', 'Albanian', 'Aragonese', 'Armenian', 'Aromanian', 'Arpitan', 'Asturian', 'Avar', 'Azerbaijani', 'Bashkir', 'Basque', 'Belarusian', 'Bosnian', 'Breton', 'Bulgarian', 'Catalan', 'Chechen', 'Chuvash', 'Cornish', 'Corsican', 'Crimean', 'Croatian', 'Czech', 'Danish', 'Dutch', 'English', 'Erzya', 'Estonian', 'Faroese', 'Finnish', 'French', 'Frisian', 'Gagauz', 'Galician', 'Gallo', 'Georgian', 'German', 'Greek', 'Hungarian', 'Icelandic', 'Ingrian', 'Irish', 'Italian', 'Kabardian', 'Kashubian', 'Kazakh', 'Ladin', 'Latin', 'Latvian', 'Laz', 'Lithuanian', 'Luxembourgish', 'Macedonian', 'Maltese', 'Manx', 'Mari', 'Mingrelian', 'Mirandese', 'Montenegrin', 'Norwegian', 'Occitan', 'Ossetian', 'Picard', 'Polish', 'Portuguese', 'Romani', 'Romanian', 'Romansh', 'Russian', 'Sami', 'Sardinian', 'Scots', 'Scottish','Gaelic', 'Serbian', 'Silesian', 'Slovak', 'Slovene', 'Sorbian', 'Spanish', 'Svan', 'Swedish', 'Tabasaran', 'Tatar', 'Turkish', 'Ukrainian', 'Vepsian', 'Võro', 'Walloon', 'Welsh', 'Wymysorys']
             },
             {
                 question: 'What field do you work in?',
@@ -254,24 +288,32 @@ app.factory('questionnaire', function () {
 
             countries = [];
 
-            function getProportionalScore(upperLimit,lowerLimit,value){
+            function getProportionalScore(lowerLimit,upperLimit,value){
+
+                console.log('value',value);
+                console.log(upperLimit,lowerLimit);
                 if (value >= lowerLimit && value <= upperLimit){
                     return 10;
                 }else{
-                    var lowScore = 1 - Math.abs(value - lowerLimit)/lowerLimit;
-                    var highScore = 1 - Math.abs(value - lowerLimit)/upperLimit;
-                    return 10*(Math.min(lowScore,highScore));
+                    var limit = Math.abs(value-lowerLimit) > Math.abs(value-upperLimit) ? upperLimit : lowerLimit;
+                    var multiplier = value > limit ? 0.5 : 1.5;
+                    var score = 20*(1 - Math.min(1,Math.abs(value - multiplier*limit)/limit));
+                    console.log(score);
+                    return score;
                 }
             }
 
             countriesToSearch.forEach(function(country,index) {
-                var score = 0;
-                var laborPercent = country.labor[questionnaireAnswers.question2];
+                var score = 0, upperLimit, lowerLimit, climateString;
+                var laborPercent = country.labor[questionnaireAnswers.question2] || 0;
                 //if user's specified industry is more than 75% of the country's workforce, set score to 10
                 var laborScore = laborPercent/7.5 > 10 ? 10 : laborPercent/10;
-
                 //create Regular Expression to check climate string for climate answers
-                var climateString = new RegExp(questionnaireAnswers.question3.join('|'));
+                if (typeof questionnaireAnswers.question3 == 'array') {
+                    climateString = new RegExp(questionnaireAnswers.question3.join('|'),'i');
+                }else{
+                    climateString = new RegExp(questionnaireAnswers.question3,'i');
+                }
                 //if climate string contains one of the climate answers, set score to 10
                 var climateScore = country.climate.match(climateString) != null ? 10: 0;
 
@@ -285,6 +327,7 @@ app.factory('questionnaire', function () {
                 //}
 
                 var userLargestCityPop = questionnaireAnswers.question4;
+                console.log(userLargestCityPop);
                 switch(userLargestCityPop){
                     case 'Small (<100,000)':
                         lowerLimit = 0;
@@ -301,7 +344,9 @@ app.factory('questionnaire', function () {
                     default:
                         break;
                 }
-                var largestCityPopScore = getProportionalScore(lowerLimit,upperLimit,country.largestCityPop);
+                console.log(country.countryName);
+                var largestCityPopScore = getProportionalScore(lowerLimit,upperLimit,country.largestCityPop) || 0;
+
                 //if (country.largestCityPop > lowerLimit && country.largestCityPop < upperLimit){
                 //    largestCityPopScore = 10;
                 //}else{
@@ -336,9 +381,9 @@ app.factory('questionnaire', function () {
                         break;
                 }
 
-                var userPerCapitaPPP = questionnaireAnswers.question7;
-                var upperLimit, lowerLimit;
+                var medianAgeScore = getProportionalScore(lowerLimit,upperLimit,country.medianAge);
 
+                var userPerCapitaPPP = questionnaireAnswers.question7;
                 switch(userPerCapitaPPP){
                     case 'High':
                         lowerLimit = 60000;
@@ -356,9 +401,6 @@ app.factory('questionnaire', function () {
                         break;
                 }
                 var perCapitaPPPScore = getProportionalScore(lowerLimit,upperLimit,country.perCapitaPPP);
-
-
-                var medianAgeScore = getProportionalScore(lowerLimit,upperLimit,country.medianAge);
 
                 var userInternetUsagePerCapita = questionnaireAnswers.question8;
                 switch(userInternetUsagePerCapita){
@@ -381,7 +423,7 @@ app.factory('questionnaire', function () {
                 }
 
                 var internetUsageScore = getProportionalScore(lowerLimit,upperLimit,country.internetUsagePerCapita);
-
+                console.log('laborScore',laborScore,'climateScore',climateScore,'largestCityPopScore',largestCityPopScore,'urbanPopulationScore',urbanPopulationScore,'perCapitaPPPScore',perCapitaPPPScore,'medianAgeScore',medianAgeScore,'internetUsageScore',internetUsageScore);
                 score = score + laborScore + climateScore + largestCityPopScore + urbanPopulationScore + perCapitaPPPScore + medianAgeScore + internetUsageScore;
                 country.score = score;
                 countries.push(country);
