@@ -32,6 +32,10 @@ app.config(['$routeProvider','$locationProvider', function($routeProvider, $loca
         {
             templateUrl: '/views/help.html',
             controller: 'helpController'
+        }).when('/country',
+        {
+            templateUrl: '/views/country.html',
+            controller: 'countryController'
         }).otherwise({
         redirectTo: '/'
     });
@@ -69,8 +73,11 @@ app.controller('contactController',['$scope', function($scope){
 }]);
 
 app.controller('signUpController',['$scope','$http', function($scope,$http){
+}]);
 
-
+app.controller('countryController', ['countryPage','$scope','$http', function(countryPage,$scope,$http){
+    $scope.countryName = countryPage.name;
+    console.log($scope.nationMasterLink);
 }]);
 
 app.controller('loginController', ['$scope', '$http', 'authService', '$location', '$rootScope', function($scope, $http, authService, $location, $rootScope){
@@ -102,7 +109,7 @@ app.controller('helpController',['$scope', function($scope){
     $scope.message = "I'm a help page that currently doesn't help at all";
 }]);
 
-app.controller('questionnaireController',['questionnaire','$rootScope','$scope','$location', '$http', function(questionnaire,$rootScope,$scope,$location,$http){
+app.controller('questionnaireController',['countryPage','questionnaire','$rootScope','$scope','$location', '$http', function(countryPage,questionnaire,$rootScope,$scope,$location,$http){
 
 
 
@@ -170,6 +177,10 @@ app.controller('questionnaireController',['questionnaire','$rootScope','$scope',
             then(function(response){
                 $scope.userCountries = response.userCountries;
             })
+    }
+
+    $scope.setCountryPage = function(countryName){
+        countryPage.name = countryName;
     }
 
 }]);
@@ -449,3 +460,7 @@ app.factory('questionnaire', function () {
         }
     };
 });
+
+app.factory('countryPage',function(){
+    return {};
+})

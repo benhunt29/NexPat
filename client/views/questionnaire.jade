@@ -9,8 +9,8 @@ div(ng-hide="recommendations")
                 label.btn.btn-default {{item}}
                 input(type="radio" value = "{{item}}" ng-model="data.answer" ng-change="getQuestion();logAnswer()" )
 
-div(ng-show="user.username" ng-click="addCountry()") Countries List
+div(ng-show="user.username" ng-click="addCountry()") Top Recommended Countries
     div {{userCountries}}
 div(ng-repeat="country in recommendations")
-    p {{country.countryName}}
+    a(href="/country" ng-click="setCountryPage(country.countryName)") {{country.countryName}}
 

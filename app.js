@@ -16,8 +16,10 @@ var Users = require('./models/users');
 //var questionnaire = require('./routes/api/questionnaire');
 //var session = require('express-session');
 //var flash = require('express-flash');
-var LocalStrategy = require('passport-local').Strategy;
 
+//Passport Strategies
+var LocalStrategy = require('passport-local').Strategy;
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var JwtStrategy = require('passport-jwt').Strategy;
 var opts = {};
 opts.secretOrKey = 'supersecret';
@@ -137,6 +139,18 @@ passport.use('local',new LocalStrategy({ passReqToCallback:true,
             });
         });
     }));
+
+passport.use(new GoogleStrategy({
+        clientID: '466944027920-6l7mdc2q5nghcpmkqrv10lphoe3f78v8.apps.googleusercontent.com',
+        clientSecret: 'bBCiwuKRLS_27tvHIU_0dFQM',
+        callbackURL: "http://127.0.0.1:3000/auth/google/callback"
+    },
+    function(accessToken, refreshToken, profile, done) {
+        User.findOrCreate({ googleId: profile.id }, function (err, user) {
+            return done(err, user);
+        });
+    }
+));
 
 app.use('/', index);
 app.use('/api/register', register);
