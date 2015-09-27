@@ -1,8 +1,15 @@
-var app = angular.module('NextPat', ['ngRoute']);
+var app = angular.module('NextPat', ['ngRoute','ngMaterial']);
 
-app.config(['$routeProvider','$locationProvider', function($routeProvider, $locationProvider){
+app.config(['$routeProvider','$locationProvider','$mdThemingProvider', function($routeProvider, $locationProvider,$mdThemingProvider){
 
     $locationProvider.html5Mode(true);
+
+    $mdThemingProvider
+        .theme('default')
+        .primaryPalette('cyan')
+        .accentPalette('pink')
+        .warnPalette('red')
+        .backgroundPalette('blue-grey');
 
     $routeProvider.when('/',
         {
@@ -27,7 +34,7 @@ app.config(['$routeProvider','$locationProvider', function($routeProvider, $loca
         }).when('/questionnaire',
         {
             templateUrl: '/views/questionnaire.html',
-            controller: 'questionnaireController'
+            controller: 'questionnaireController as ctrl'
         }).when('/help',
         {
             templateUrl: '/views/help.html',
@@ -89,6 +96,15 @@ app.controller('loginController', ['$scope', '$http', 'authService', '$location'
                 $location.path("/questionnaire");
             });
     };
+
+    $scope.googleLogin = function(){
+        //$http.get('/api/login/auth/google')
+        //    .then(function (response) {
+        //        authService.saveToken(response.data);
+        //        $rootScope.user = authService.getUser();
+        //        $location.path("/questionnaire");
+        //    });
+    }
 }]);
 
 app.controller('navCtrl', ['authService','$scope','$rootScope','$location','$http', function(authService, $scope,$rootScope, $location,$http){
@@ -114,7 +130,7 @@ app.controller('helpController',['$scope', function($scope){
     $scope.message = "I'm a help page that currently doesn't help at all";
 }]);
 
-app.controller('questionnaireController',['countryPage','questionnaire','$rootScope','$scope','$location', '$http', function(countryPage,questionnaire,$rootScope,$scope,$location,$http){
+app.controller('questionnaireController',['countryPage','questionnaire','$rootScope','$scope','$location', '$http','$log','$q',function(countryPage,questionnaire,$rootScope,$scope,$location,$http,$log,$q){
 
 
 
@@ -123,9 +139,38 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
     var userQuestionnaire = {};
     var recommendations;
     var questionNum = 0;
-    $scope.data = {
-        answer: ''
+
+
+
+    $scope.querySearch = function(query) {
+        //console.log(query);
+        //console.log($scope.list);
+        return query ? $scope.list.filter( createFilterFor(query) ) : $scope.list;
+    };
+
+    function loadAll() {
+
+        return $scope.list.map( function (item) {
+            return {
+                value: item.toLowerCase(),
+                display: item
+            };
+        });
+    }
+
+    function createFilterFor(query) {
+        var lowercaseQuery = angular.lowercase(query);
+        return function filterFn(item) {
+            return (item.value.indexOf(lowercaseQuery) === 0);
         };
+    }
+
+    $scope.answer = [];
+    $scope.pushAnswer = function(answer){
+        if(answer){
+            $scope.answer.push(answer);
+        }
+    };
 
     $http.get('/api/questionnaire/'+$rootScope.user.username).
         then(function(userAnswers){
@@ -136,8 +181,11 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
                 });
             }else{
                 $scope.getQuestion();
+                $scope.list = loadAll();
             }
         });
+
+
 
     //$scope.type = questions[0].type;
     //console.log(questions[0].answerOptions);
@@ -182,7 +230,7 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
             then(function(response){
                 $scope.userCountries = response.userCountries;
             })
-    }
+    };
 
     $scope.setCountryPage = function(countryName){
         countryPage.name = countryName;
@@ -333,15 +381,6 @@ app.factory('questionnaire', function () {
                 //if climate string contains one of the climate answers, set score to 10
                 var climateScore = country.climate.match(climateString) != null ? 10: 0;
 
-
-                //if (country.perCapitaPPP > lowerLimit && country.perCapitaPPP < upperLimit){
-                //    perCapitaPPPScore = 10;
-                //}else{
-                //    var lowPerCapitaPPPScore = 1 - Math.abs(country.perCapitaPPP - lowerLimit)/lowerLimit;
-                //    var highPerCapitaPPPScore = 1 - Math.abs(country.perCapitaPPP - lowerLimit)/upperLimit;
-                //    perCapitaPPPScore = 10*(Math.min(lowLargestCityPopScore,highLargestCityPopScore));
-                //}
-
                 var userLargestCityPop = questionnaireAnswers.question4;
                 console.log(userLargestCityPop);
                 switch(userLargestCityPop){
@@ -360,17 +399,8 @@ app.factory('questionnaire', function () {
                     default:
                         break;
                 }
-                console.log(country.countryName);
                 var largestCityPopScore = getProportionalScore(lowerLimit,upperLimit,country.largestCityPop) || 0;
 
-                //if (country.largestCityPop > lowerLimit && country.largestCityPop < upperLimit){
-                //    largestCityPopScore = 10;
-                //}else{
-                //    var lowLargestCityPopScore = 1 - Math.abs(country.largestCityPop - lowerLimit)/lowerLimit;
-                //    var highLargestCityPopScore = 1 - Math.abs(country.largestCityPop-upperLimit)/upperLimit;
-                //
-                //    largestCityPopScore = 10*(Math.min(lowLargestCityPopScore,highLargestCityPopScore));
-                //}
                 var userUrbanPopulation = questionnaireAnswers.question5;
                 var urbanPopulationScore;
                 if(userUrbanPopulation){
@@ -439,7 +469,6 @@ app.factory('questionnaire', function () {
                 }
 
                 var internetUsageScore = getProportionalScore(lowerLimit,upperLimit,country.internetUsagePerCapita);
-                console.log('laborScore',laborScore,'climateScore',climateScore,'largestCityPopScore',largestCityPopScore,'urbanPopulationScore',urbanPopulationScore,'perCapitaPPPScore',perCapitaPPPScore,'medianAgeScore',medianAgeScore,'internetUsageScore',internetUsageScore);
                 score = score + laborScore + climateScore + largestCityPopScore + urbanPopulationScore + perCapitaPPPScore + medianAgeScore + internetUsageScore;
                 country.score = score;
                 countries.push(country);
@@ -468,4 +497,4 @@ app.factory('questionnaire', function () {
 
 app.factory('countryPage',function(){
     return {};
-})
+});

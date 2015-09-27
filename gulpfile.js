@@ -13,17 +13,19 @@ gulp.task('default', ['copy', 'build-js', 'build-css','jade-templates'], functio
     gutil.log('Gulp ran.');
 });
 
-// copy images
+// copy vendor files
 gulp.task('copy', function () {
     var angular = gulp.src('node_modules/angular/angular.min.js',{base: 'node_modules'}).pipe(gulp.dest('./public/vendors/'));
-    //var angularMaterial = gulp.src('node_modules/angular-material/angular-material.min.js',{base: 'node_modules'}).pipe(gulp.dest('./public/vendors/'));
-    //var angularAnimate = gulp.src('node_modules/angular-animate/angular-animate.min.js',{base: 'node_modules'}).pipe(gulp.dest('./public/vendors/'));
-    //var angularAria = gulp.src('node_modules/angular-aria/angular-aria.min.js',{base: 'node_modules'}).pipe(gulp.dest('./public/vendors/'));
-    //var angularRoute = gulp.src('node_modules/angular-route/angular-route.min.js',{base: 'node_modules'}).pipe(gulp.dest('./public/vendors/'));
+    var angularMaterial = gulp.src('node_modules/angular-material/angular-material.min.js',{base: 'node_modules'}).pipe(gulp.dest('./public/vendors/'));
+    var angularAnimate = gulp.src('node_modules/angular-animate/angular-animate.min.js',{base: 'node_modules'}).pipe(gulp.dest('./public/vendors/'));
+    var angularAria = gulp.src('node_modules/angular-aria/angular-aria.min.js',{base: 'node_modules'}).pipe(gulp.dest('./public/vendors/'));
+    var angularRoute = gulp.src('node_modules/angular-route/angular-route.min.js',{base: 'node_modules'}).pipe(gulp.dest('./public/vendors/'));
 
-    var bootstrap = gulp.src('node_modules/bootstrap/dist/css/bootstrap.min.css',{base:'node_modules'}).pipe(gulp.dest('./public/vendors/'))
+    //var bootstrap = gulp.src('node_modules/bootstrap/dist/css/bootstrap.min.css',{base:'node_modules'}).pipe(gulp.dest('./public/vendors/'));
 
-    return merge(angular,bootstrap);//angularMaterial,angularAnimate,angularAria,angularRoute);
+    var angularMaterialCSS = gulp.src('node_modules/angular-material/angular-material.min.css',{base:'node_modules'}).pipe(gulp.dest('./public/stylesheets/'));
+
+    return merge(angular,angularMaterial,angularAnimate,angularAria,angularRoute,angularMaterialCSS);//angularMaterial,angularAnimate,angularAria,angularRoute);
 });
 
 

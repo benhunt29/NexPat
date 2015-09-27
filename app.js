@@ -89,9 +89,17 @@ app.use(passport.initialize());
 //    });
 //});
 
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+    done(null, obj);
+});
+
 passport.use(new JwtStrategy(opts, function (jwt_payload, done) {
         console.log('Checking user in passport JwtStrategy!', jwt_payload.sub);
-        User.findOne({username: jwt_payload.sub}, function (err, user) {
+        Users.findOne({username: jwt_payload.sub}, function (err, user) {
             if (err) {
                 //req.flash('incorrectCredentialsMsg', 'Incorrect username and/or password.');
                 throw err;
@@ -149,20 +157,41 @@ passport.use(new GoogleStrategy({
         callbackURL: "http://127.0.0.1:3000/api/login/auth/google/callback"
     },
     function(accessToken, refreshToken, profile, done) {
-        User.findOrCreate({ googleId: profile.id }, function (err, user) {
-            return done(err, user);
+        googleUser = {
+            firstName: profile.name.givenName,
+            lastName: profile.name.familyName,
+            email: profile.emails[0].value,
+            username: profile.emails[0].value,
+            password: profile.id
+        };
+
+        Users.findOne({username:googleUser.username}, function (err, user) {
+            if(user){
+                return done(err, user);
+            }else{
+                var user = new Users(googleUser);
+                user.save(function(err,user){
+                    //if(err) {
+                    //    res.json(401, { error: 'message' });
+                    //}else {
+                    //    res.redirect('/');
+                    //}
+                    return done(err,user);
+                });
+
+            }
         });
+
     }
 ));
 
 app.use('/', index);
 app.use('/api/register', register);
 app.use('/api/worldFactbook', worldFactbook);
-//app.use('/api/questionnaire',questionnaire);
 app.use('/api/userCountries', userCountries);
 app.use('/api/recommendedCountries', recommendedCountries);
 app.use('/api/login', login);
-app.use('api/logout',logout);
+app.use('/api/logout', logout);
 app.use('/api/questionnaire',questionnaire);
 
 

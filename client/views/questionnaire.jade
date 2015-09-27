@@ -1,13 +1,25 @@
 div(ng-hide="recommendations")
     h1 {{question}}
-    div(ng-show="type === 'boolean'")
+    div(layout="row" ng-show="type === 'boolean'")
         button(ng-click='data.answer=true;getQuestion(true);logAnswer()') Yes
         button(ng-click='data.answer=false;getQuestion(false);logAnswer()') No
-    div(ng-show="type === 'list'")
-        .col-lg-9
-            .btn-group(data-toggle="buttons" ng-repeat="item in list")
-                label.btn.btn-default {{item}}
-                input(type="radio" value = "{{item}}" ng-model="data.answer" ng-change="getQuestion();logAnswer()" )
+    md-autocomplete(
+        md-selected-item-change="pushAnswer(data.answer.display)"
+        md-selected-item="data.answer"
+        md-search-text="searchText"
+        md-items="item in querySearch(searchText)"
+        md-item-text="item.display"
+        md-min-length="0"
+        placeholder="{{question}}")
+
+        md-item-template
+            span(md-highlight-text="searchText" md-highlight-flags="^i") {{item.display}}
+    md-not-found No matches found for "{{searchText}}".
+    .md-button.md-warning.md-raised(ng-click="pushAnswer(data.answer.display)") +
+    .md-button.md-primary.md-raised(ng-click="getQuestion();logAnswer()" ng-show="answer" ng-repeat="answer in answer") {{answer}}
+    div(layout="column" ng-show="type === 'list'")
+            div(data-toggle="buttons" layout="column" layout-align="center center" )
+                .md-button.md-primary.md-raised(ng-model="data.answer"  ng-click="getQuestion();logAnswer()" ng-repeat="item in list") {{item}}
 
 div(ng-show="user.username" ng-click="addCountry()") Top Recommended Countries
     div {{userCountries}}
