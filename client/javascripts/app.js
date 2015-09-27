@@ -7,7 +7,7 @@ app.config(['$routeProvider','$locationProvider','$mdThemingProvider', function(
     $mdThemingProvider
         .theme('default')
         .primaryPalette('cyan')
-        .accentPalette('pink')
+        .accentPalette('blue')
         .warnPalette('red')
         .backgroundPalette('blue-grey');
 
@@ -138,7 +138,8 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
     var questionResponses = {};
     var userQuestionnaire = {};
     var recommendations;
-    var questionNum = 0;
+    $scope.questionNum = 0;
+    $scope.data = {};
 
 
 
@@ -165,10 +166,10 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
         };
     }
 
-    $scope.answer = [];
+    $scope.answers = [];
     $scope.pushAnswer = function(answer){
         if(answer){
-            $scope.answer.push(answer);
+            $scope.answers.push(answer);
         }
     };
 
@@ -193,12 +194,13 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
     //$scope.list = questions[0].answerOptions;
     $scope.getQuestion = function(){
 
-        if(questionNum==questions.length){
-            questionNum++;
-            questionResponses["question"+(questionNum-1)] = $scope.data.answer;
+        if($scope.questionNum==questions.length){
+            //$scope.questionNum++;
+            //questionResponses["question"+($scope.questionNum-1)] = $scope.data.answer;
             $scope.question = 'Your list is being generated!';
             userQuestionnaire.username = $rootScope.user.username;
             userQuestionnaire.questionResponses = questionResponses;
+            console.log(userQuestionnaire);
             $http.post('/api/questionnaire',userQuestionnaire);
             $http.post('/api/worldFactbook',{languageOption:true,language:questionResponses.question1}).
                 then(function(countriesToSearch){
@@ -206,17 +208,26 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
                 });
             $scope.type = '';
         }else{
-            $scope.question = questions[questionNum].question;
-            $scope.type = questions[questionNum].type;
-
+            $scope.question = questions[$scope.questionNum].question;
+            $scope.type = questions[$scope.questionNum].type;
+            console.log($scope.question, $scope.type);
             if($scope.type == 'list'){
-                $scope.list = questions[questionNum].answerOptions;
+                $scope.list = questions[$scope.questionNum].answerOptions;
+                //$scope.list = loadAll();
             }
-            questionNum++;
+            //$scope.questionNum++;
         }
     };
-    $scope.logAnswer = function(){
-        questionResponses["question"+(questionNum-1)] = $scope.data.answer;
+    $scope.logAnswer = function(answer){
+        $scope.questionNum++;
+        //answer ? questionResponses["question"+($scope.questionNum)] = answer: questionResponses["question"+($scope.questionNum)] = $scope.answers;
+        if(answer.constructor === Array){
+            answer = answer.join(' ')
+        }
+        questionResponses["question"+($scope.questionNum)] = answer;
+        $scope.answers = [];
+        $scope.searchText = '';
+        console.log(questionResponses);
     };
 
     $scope.addCountry = function(){
@@ -354,15 +365,12 @@ app.factory('questionnaire', function () {
 
             function getProportionalScore(lowerLimit,upperLimit,value){
 
-                console.log('value',value);
-                console.log(upperLimit,lowerLimit);
                 if (value >= lowerLimit && value <= upperLimit){
                     return 10;
                 }else{
                     var limit = Math.abs(value-lowerLimit) > Math.abs(value-upperLimit) ? upperLimit : lowerLimit;
                     var multiplier = value > limit ? 0.5 : 1.5;
                     var score = 20*(1 - Math.min(1,Math.abs(value - multiplier*limit)/limit));
-                    console.log(score);
                     return score;
                 }
             }
@@ -382,7 +390,6 @@ app.factory('questionnaire', function () {
                 var climateScore = country.climate.match(climateString) != null ? 10: 0;
 
                 var userLargestCityPop = questionnaireAnswers.question4;
-                console.log(userLargestCityPop);
                 switch(userLargestCityPop){
                     case 'Small (<100,000)':
                         lowerLimit = 0;

@@ -1,27 +1,31 @@
 extends layout
 block content
-    header
-        nav(class="navbar navbar-default" ng-controller="navCtrl")
-            div(class="container")
-                div(class="navbar-header")
-                    a(class="navbar-brand" href="/")
-                        h1 NextPat
-            ul(class="nav navbar-nav navbar-right")
-                li
-                    a(href="/") Home
-                li
-                    a(href="/questionnaire") Questionnaire
-                li
-                    a(href="/about") About
-                li
-                    a(href="/help") Help
-                li
-                    a(href="/signUp") Sign up
-                li
-                    a(href="/login") Sign in
-                li
-                    a(ng-click="logout()") Sign out
+    md-toolbar.md-background(flex layout-fill layout="row" layout-align="center end" ng-controller="navCtrl")
+        //div(class="container")
+        //    div(class="navbar-header")
+        //        a(class="navbar-brand" href="/")
+        //            h1 NextPat
+        //md-content(flex layout = "column")
+        //.md-toolbar-tools
+        div(flex layout="column")
+            h1 NextPat
+            span(flex)
+            div(layout="row" layout-align="center center")
+                .md-button.md-primary.md-hue-1.md-raised(flex) Home
+                    a(href="/")
+                .md-button.md-primary.md-hue-1.md-raised(flex) Questionnaire
+                    a(href="/questionnaire")
+                .md-button.md-primary.md-hue-1.md-raised(flex) About
+                    a(href="/about")
+                .md-button.md-primary.md-hue-1.md-raised(flex) Help
+                    a(href="/help")
+                .md-button.md-primary.md-hue-1.md-raised(flex) Sign up
+                    a(href="/signUp")
+                .md-button.md-primary.md-hue-1.md-raised(flex) Sign in
+                    a(href="/login")
+                .md-button.md-primary.md-hue-1.md-raised(flex) Sign out
+                    a(ng-click="logout()")
 
-    #main
+    #main(layout="column" layout-align="center center")
         <!-- ng-view will display injected content -->
         div(ng-view)

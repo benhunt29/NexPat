@@ -1,28 +1,31 @@
-div(ng-hide="recommendations")
+div(layout = "column" ng-hide="recommendations")
     h1 {{question}}
     div(layout="row" ng-show="type === 'boolean'")
-        button(ng-click='data.answer=true;getQuestion(true);logAnswer()') Yes
-        button(ng-click='data.answer=false;getQuestion(false);logAnswer()') No
-    md-autocomplete(
-        md-selected-item-change="pushAnswer(data.answer.display)"
-        md-selected-item="data.answer"
-        md-search-text="searchText"
-        md-items="item in querySearch(searchText)"
-        md-item-text="item.display"
-        md-min-length="0"
-        placeholder="{{question}}")
+        button(ng-click='logAnswer(true);getQuestion()') Yes
+        button(ng-click='logAnswer(false);getQuestion()') No
+    div.md-padding(ng-show="questionNum == 0")
+        md-autocomplete(
+            md-selected-item-change="pushAnswer(data.answer.display)"
+            md-selected-item="data.answer"
+            md-search-text="searchText"
+            md-items="item in querySearch(searchText)"
+            md-item-text="item.display"
+            md-min-length="0"
+            placeholder="Enter a Language"
+            )
 
-        md-item-template
-            span(md-highlight-text="searchText" md-highlight-flags="^i") {{item.display}}
-    md-not-found No matches found for "{{searchText}}".
-    .md-button.md-warning.md-raised(ng-click="pushAnswer(data.answer.display)") +
-    .md-button.md-primary.md-raised(ng-click="getQuestion();logAnswer()" ng-show="answer" ng-repeat="answer in answer") {{answer}}
-    div(layout="column" ng-show="type === 'list'")
-            div(data-toggle="buttons" layout="column" layout-align="center center" )
-                .md-button.md-primary.md-raised(ng-model="data.answer"  ng-click="getQuestion();logAnswer()" ng-repeat="item in list") {{item}}
+            md-item-template
+                span(md-highlight-text="searchText" md-highlight-flags="^i") {{item.display}}
+        .md-button.md-accent.md-raised(ng-click="logAnswer(answers);getQuestion()") Submit
 
-div(ng-show="user.username" ng-click="addCountry()") Top Recommended Countries
+    .md-button.md-primary.md-raised(ng-show="answers" ng-repeat="answer in answers") {{answer}}
+    div(layout="column" ng-show="type === 'list' && questionNum > 0")
+        md-input-container(layout="column" layout-align="center center" ng-repeat="item in list")
+            input(type ="button" ng-model="data.answer" value = "{{item}}" ng-click="logAnswer(item);getQuestion()" aria-label="nolabel" class="md-button md-raised md-primary")
+
+div(ng-show="user.username" ng-click="addCountry()") User Countries
     div {{userCountries}}
-div(ng-repeat="country in recommendations")
-    a(href="/country" ng-click="setCountryPage(country.countryName)") {{country.countryName}}
+div Top Recommended Countries
+    div(ng-repeat="country in recommendations")
+        a(href="/country" ng-click="setCountryPage(country.countryName)") {{country.countryName}}
 
