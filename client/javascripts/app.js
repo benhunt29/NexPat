@@ -1,12 +1,14 @@
 var app = angular.module('NextPat', ['ngRoute','ngMaterial']);
 
-app.config(['$routeProvider','$locationProvider','$mdThemingProvider', function($routeProvider, $locationProvider,$mdThemingProvider){
+app.config(['$httpProvider','$routeProvider','$locationProvider','$mdThemingProvider', function($httpProvider,$routeProvider, $locationProvider,$mdThemingProvider){
 
     $locationProvider.html5Mode(true);
 
+    $httpProvider.interceptors.push('authInterceptor');
+
     $mdThemingProvider
         .theme('default')
-        .primaryPalette('cyan')
+        .primaryPalette('blue-grey')
         .accentPalette('blue')
         .warnPalette('red')
         .backgroundPalette('blue-grey');
@@ -166,10 +168,15 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
         };
     }
 
+    $scope.data = {};
+    //$scope.data.showAnswers = false;
+
     $scope.answers = [];
     $scope.pushAnswer = function(answer){
         if(answer){
             $scope.answers.push(answer);
+            $scope.data.showAnswers = true;
+            console.log('PUSH');
         }
     };
 
@@ -193,7 +200,9 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
     //$scope.question = questions[0].question;
     //$scope.list = questions[0].answerOptions;
     $scope.getQuestion = function(){
+        $scope.data.showAnswers = false;
 
+        console.log($scope.data.showAnswers);
         if($scope.questionNum==questions.length){
             //$scope.questionNum++;
             //questionResponses["question"+($scope.questionNum-1)] = $scope.data.answer;
@@ -216,17 +225,24 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
                 //$scope.list = loadAll();
             }
             //$scope.questionNum++;
+            //$scope.data.showAnswers = false;
         }
     };
     $scope.logAnswer = function(answer){
+        $scope.data.showAnswers = false;
+        console.log($scope.data.showAnswers);
+
         $scope.questionNum++;
         //answer ? questionResponses["question"+($scope.questionNum)] = answer: questionResponses["question"+($scope.questionNum)] = $scope.answers;
         if(answer.constructor === Array){
             answer = answer.join(' ')
         }
         questionResponses["question"+($scope.questionNum)] = answer;
+
         $scope.answers = [];
         $scope.searchText = '';
+
+        //$scope.$apply($scope.showAnswers = false);
         console.log(questionResponses);
     };
 
@@ -255,7 +271,9 @@ app.service('authService', ['$window', function ($window) {
             var base64Url = token.split('.')[1];
             var base64 = base64Url.replace('-', '+').replace('_', '/');
             return JSON.parse($window.atob(base64));
-        } else return {};
+        } else {
+            return {};
+        }
     };
 
     this.saveToken = function (token) {
@@ -295,12 +313,17 @@ app.factory('authInterceptor', ['$q', '$location', 'authService', function ($q, 
     return {
         request: function (config) {
             config.headers = config.headers || {};
+            console.log(config.url);
             if (authService.isAuthed()) {
                 config.headers.Authorization = 'Bearer ' + authService.getToken();
             }
             return config;
         },
         response: function (response) {
+            if($location.search().access_token){
+                authService.saveToken($location.search().access_token);
+                $location.search('access_token', undefined);
+            }
 
             if (response.status === 401) {
 
@@ -482,22 +505,22 @@ app.factory('questionnaire', function () {
             });
 
             countries.sort(function (a, b) {
-                    if (a.score > b.score) {
-                        return -1;
-                    }
-                    if (a.score < b.score) {
-                        return 1;
-                    }
-                    if(a.countryName > b.countryName){
-                        return 1;
-                    }
-                    if(a.countryName < b.countryName){
-                        return -1;
-                    }
-                    return 0;
-                });
+                if (a.score > b.score) {
+                    return -1;
+                }
+                if (a.score < b.score) {
+                    return 1;
+                }
+                if(a.countryName > b.countryName){
+                    return 1;
+                }
+                if(a.countryName < b.countryName){
+                    return -1;
+                }
+                return 0;
+            });
 
-                return countries.slice(0,4);
+            return countries.slice(0,4);
         }
     };
 });

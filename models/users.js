@@ -6,11 +6,12 @@ var mongoose = require('mongoose'),
 // create a Mongoose Schema
 var userSchema = new Schema({
     username: { type: String, required: true, index: {unique:true}},
-    password: { type: String, required: true },
+    password: String,
     firstName: String,
     lastName: String,
     email: { type: String, required: true, unique:true},
-    registerDate: Date
+    registerDate: Date,
+    access_token: String
 });
 
 userSchema.pre('save',function(next){

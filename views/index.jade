@@ -6,19 +6,24 @@ block content
     //        md-button(flex layout-fill) users
     //        md-button(flex layout-fill) login
 
-    md-toolbar.md-primary.md-whiteframe-z1(layout="row" layout-align="center end" ng-controller="navCtrl")
+    md-toolbar.md-primary.md-whiteframe-z1(ng-controller="navCtrl")
         //div(class="container")
         //    div(class="navbar-header")
         //        a(class="navbar-brand" href="/")
         //            h1 NextPat
         //md-content(flex layout = "column")
         //.md-toolbar-tools
-        div(layout="column")
-            h1(layout-align="left") NextPat
-            span(flex)
-            div(layout="row" layout-align="center center")
-
-                a(href="/" layout-fill)
+        //span(flex)
+        div(layout="column" flex )
+            div(layout="row" layout-align="start end")
+                h1#NextPatTitle.md-display-4() NextPat
+                div(layout="column" layout-align= "end start")
+                    h3#subtitle.md-headline() A Wanderer's Friend
+                //span(flex)
+            //span(flex) SPAN
+            //div(layout="row" )
+            div(layout="row" flex layout-align="space-around center" layout-align-md="start center" layout-wrap)
+                a(href="/")
                     .md-button(flex) Home
                 a(href="/questionnaire")
                     .md-button(flex) Questionnaire

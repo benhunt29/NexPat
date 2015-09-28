@@ -18,12 +18,6 @@ var jsonwebtoken = require('jsonwebtoken');
 //      res.send(req.user.profile);
 //});
 
-router.all('/', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    next();
-});
-
 router.post('/', function(req, res, next) {
     passport.authenticate('local', {session:false},function(err, user, info) {
         if (err) { return next(err) }
@@ -33,7 +27,8 @@ router.post('/', function(req, res, next) {
 
         //user has authenticated correctly thus we create a JWT token
         //var token = jwt.encode({ username: 'somedata'}, tokenSecret);
-        var token = jsonwebtoken.sign(user, 'supersecret', {
+        var userToBeTokenized = { username: user.username };
+        var token = jsonwebtoken.sign(userToBeTokenized, 'supersecret', {
             expiresInMinutes: 1440 // expires in 24 hours
         });
         res.json(token);
@@ -42,38 +37,37 @@ router.post('/', function(req, res, next) {
 });
 
 router.get('/auth/google', function(req,res,next) {
-    passport.authenticate('google',{ scope: ['https://www.googleapis.com/auth/plus.login','https://www.googleapis.com/auth/plus.profile.emails.read'] },function(err,user){
-        if (err) { return next(err) }
-        if (!user) {
-            return res.json(401, { error: 'message' });
-        }
-
-        //user has authenticated correctly thus we create a JWT token
-        //var token = jwt.encode({ username: 'somedata'}, tokenSecret);
-        var token = jsonwebtoken.sign(user, 'supersecret', {
-            expiresInMinutes: 1440 // expires in 24 hours
-        });
-        res.json(token);
-
-    })(req, res, next);
+    passport.authenticate('google',{ scope: ['https://www.googleapis.com/auth/plus.login','https://www.googleapis.com/auth/plus.profile.emails.read'] })(req, res, next);
 });
 
-router.get('/auth/google/callback', function(req,res,next) {
-    passport.authenticate('google', {failureRedirect: '/' },function(err, user, info) {
-        if (err) { return next(err) }
-        if (!user) {
-            return res.json(401, { error: 'message' });
-        }
+//router.get('/auth/google/callback', function(req,res,next) {
+//    passport.authenticate('google', {failureRedirect: '/' },function(err, user, info) {
+//        if (err) { return next(err) }
+//        if (!user) {
+//            return res.json(401, { error: 'message' });
+//        }
+//
+//        //user has authenticated correctly thus we create a JWT token
+//        //var token = jwt.encode({ username: 'somedata'}, tokenSecret);
+//        var token = jsonwebtoken.sign(user, 'supersecret', {
+//            expiresInMinutes: 1440 // expires in 24 hours
+//        });
+//        res.json(token);
+//
+//    })(req, res, next);
+//});
 
-        //user has authenticated correctly thus we create a JWT token
-        //var token = jwt.encode({ username: 'somedata'}, tokenSecret);
-        var token = jsonwebtoken.sign(user, 'supersecret', {
+router.get('/auth/google/callback',
+    passport.authenticate('google', { session: false, failureRedirect: "/" }),
+    function(req, res) {
+        var userToBeTokenized = { username: req.user.username };
+        var token = jsonwebtoken.sign(userToBeTokenized, 'supersecret', {
             expiresInMinutes: 1440 // expires in 24 hours
         });
-        res.json(token);
+        res.redirect("/?access_token=" + token);
+    }
+);
 
-    })(req, res, next);
-});
 
 // Google will redirect the user to this URL after authentication.  Finish
 // the process by verifying the assertion.  If valid, the user will be

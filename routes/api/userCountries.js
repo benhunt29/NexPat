@@ -2,11 +2,13 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var userCountries = require('../../models/userCountries');
+var passport = require('passport');
 
 //mongoose.collection.createIndex({"people.languages.text":"text"});
 
-router.get('/:username', function(req, res, next) {
+router.get('/:username', passport.authenticate('bearer',{session:false}), function(req, res, next) {
   var obj = req.params;
+  console.log(req.user);
 
   userCountries.findOne({username: obj.username}, function (err, userCountries) {
 

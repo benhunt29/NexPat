@@ -14,6 +14,7 @@ var userCountries = require('./routes/api/userCountries');
 var recommendedCountries = require('./routes/api/recommendedCountries');
 var questionnaire = require('./routes/api/questionnaire');
 var Users = require('./models/users');
+var BearerStrategy = require('passport-http-bearer');
 //var questionnaire = require('./routes/api/questionnaire');
 //var session = require('express-session');
 //var flash = require('express-flash');
@@ -89,11 +90,11 @@ app.use(passport.initialize());
 //    });
 //});
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user, done) {
     done(null, user);
 });
 
-passport.deserializeUser(function(obj, done) {
+passport.deserializeUser(function (obj, done) {
     done(null, obj);
 });
 
@@ -124,27 +125,29 @@ passport.use(new JwtStrategy(opts, function (jwt_payload, done) {
     })
 );
 
-passport.use('local',new LocalStrategy({ passReqToCallback:true,
-        usernameField:'username'},
-    function(req,username,password,done){
-        Users.findOne({ username: username },function(err,user){
-            if(err) {
+passport.use('local', new LocalStrategy({
+        passReqToCallback: true,
+        usernameField: 'username'
+    },
+    function (req, username, password, done) {
+        Users.findOne({username: username}, function (err, user) {
+            if (err) {
                 //req.flash('incorrectCredentialsMsg', 'Incorrect username and/or password.');
                 throw err;
             }
 
-            if(!user){
+            if (!user) {
                 console.log('nouser');
-                return done(null,false);//,req.flash('incorrectCredentialsMsg', 'Incorrect username and/or password.'));
+                return done(null, false);//,req.flash('incorrectCredentialsMsg', 'Incorrect username and/or password.'));
             }
 
-            user.comparePassword(password, function(err,isMatch){
-                if(err) {
+            user.comparePassword(password, function (err, isMatch) {
+                if (err) {
                     throw err;
                 }
-                if(isMatch){
-                    return done(null,user);
-                }else {
+                if (isMatch) {
+                    return done(null, user);
+                } else {
                     done(null, false);//,req.flash('incorrectCredentialsMsg', 'Incorrect username and/or password.'));
                 }
             });
@@ -156,27 +159,27 @@ passport.use(new GoogleStrategy({
         clientSecret: GOOGLE_CLIENT_SECRET,
         callbackURL: "http://127.0.0.1:3000/api/login/auth/google/callback"
     },
-    function(accessToken, refreshToken, profile, done) {
+    function (accessToken, refreshToken, profile, done) {
         googleUser = {
             firstName: profile.name.givenName,
             lastName: profile.name.familyName,
             email: profile.emails[0].value,
             username: profile.emails[0].value,
-            password: profile.id
+            access_token: accessToken
         };
 
-        Users.findOne({username:googleUser.username}, function (err, user) {
-            if(user){
+        Users.findOne({username: googleUser.username}, function (err, user) {
+            if (user) {
                 return done(err, user);
-            }else{
+            } else {
                 var user = new Users(googleUser);
-                user.save(function(err,user){
+                user.save(function (err, user) {
                     //if(err) {
                     //    res.json(401, { error: 'message' });
                     //}else {
                     //    res.redirect('/');
                     //}
-                    return done(err,user);
+                    return done(err, user);
                 });
 
             }
@@ -185,6 +188,25 @@ passport.use(new GoogleStrategy({
     }
 ));
 
+passport.use(
+    new BearerStrategy(
+        function(token, done) {
+            User.findOne({ access_token: token },
+                function(err, user) {
+                    if(err) {
+                        return done(err)
+                    }
+                    if(!user) {
+                        return done(null, false)
+                    }
+
+                    return done(null, user, { scope: 'all' })
+                }
+            );
+        }
+    )
+);
+
 app.use('/', index);
 app.use('/api/register', register);
 app.use('/api/worldFactbook', worldFactbook);
@@ -192,8 +214,14 @@ app.use('/api/userCountries', userCountries);
 app.use('/api/recommendedCountries', recommendedCountries);
 app.use('/api/login', login);
 app.use('/api/logout', logout);
-app.use('/api/questionnaire',questionnaire);
-
+app.use('/api/questionnaire', questionnaire);
+app.use('/*', function (req, res, next) {
+    if (req.url.contains('.')) { // exclude files
+        next();
+    } else {
+        res.redirect('/#' + req.url);
+    }
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
