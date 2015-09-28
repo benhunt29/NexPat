@@ -1,30 +1,38 @@
 extends layout
 block content
-    md-toolbar.md-background(flex layout-fill layout="row" layout-align="center end" ng-controller="navCtrl")
+    //md-toolbar.md-primary.md-whiteframe-z1(md-scroll-shrink)
+    //    md-content(layout="column"  layout-align="start center" class="md-toolbar-tools md-toolbar-tools-bottom")
+    //        md-button(flex layout-fill) home
+    //        md-button(flex layout-fill) users
+    //        md-button(flex layout-fill) login
+
+    md-toolbar.md-primary.md-whiteframe-z1(layout="row" layout-align="center end" ng-controller="navCtrl")
         //div(class="container")
         //    div(class="navbar-header")
         //        a(class="navbar-brand" href="/")
         //            h1 NextPat
         //md-content(flex layout = "column")
         //.md-toolbar-tools
-        div(flex layout="column")
-            h1 NextPat
+        div(layout="column")
+            h1(layout-align="left") NextPat
             span(flex)
             div(layout="row" layout-align="center center")
-                .md-button.md-primary.md-hue-1.md-raised(flex) Home
-                    a(href="/")
-                .md-button.md-primary.md-hue-1.md-raised(flex) Questionnaire
-                    a(href="/questionnaire")
-                .md-button.md-primary.md-hue-1.md-raised(flex) About
-                    a(href="/about")
-                .md-button.md-primary.md-hue-1.md-raised(flex) Help
-                    a(href="/help")
-                .md-button.md-primary.md-hue-1.md-raised(flex) Sign up
-                    a(href="/signUp")
-                .md-button.md-primary.md-hue-1.md-raised(flex) Sign in
-                    a(href="/login")
-                .md-button.md-primary.md-hue-1.md-raised(flex) Sign out
-                    a(ng-click="logout()")
+
+                a(href="/" layout-fill)
+                    .md-button(flex) Home
+                a(href="/questionnaire")
+                    .md-button(flex) Questionnaire
+                a(href="/about")
+                    .md-button(flex) About
+                a(href="/help")
+                    .md-button(flex) Help
+                a(href="/signUp")
+                    .md-button(flex) Sign up
+                a(href="/login")
+                    .md-button(flex) Sign in
+                a(ng-click="logout()")
+                    .md-button(flex) Sign out
+
 
     #main(layout="column" layout-align="center center")
         <!-- ng-view will display injected content -->
