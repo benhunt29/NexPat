@@ -1,9 +1,11 @@
 div(layout = "column" ng-hide="recommendations" layout-align = "center center")
-    div(layout = "row" layout-align="center center")
-        h1.md-display-3 {{question}}
+    div(layout = "row" layout-align="center end" )
+        //span(flex="20")
+        h1.md-display-3(flex="80") {{question}}
+        //span(flex="20")
     div(layout="row" ng-show="type === 'boolean'")
-        md-button(ng-click='logAnswer(true);getQuestion()') Yes
-        md-button(ng-click='logAnswer(false);getQuestion()') No
+        md-button.md-raised(ng-click='logAnswer(true);getQuestion()') Yes
+        md-button.md-raised(ng-click='logAnswer(false);getQuestion()') No
     div.md-padding(layout = "row" ng-show="questionNum == 0" layout-align = "center start" flex="50")
         md-autocomplete(
             md-selected-item-change="pushAnswer(data.answer.display)"
@@ -18,14 +20,13 @@ div(layout = "column" ng-hide="recommendations" layout-align = "center center")
 
             md-item-template
                 span(md-highlight-text="searchText" md-highlight-flags="^i") {{item.display}}
-    #showAnswers(layout="row" layout-align="space-between center")
-        //.md-button.md-primary.md-raised( ng-repeat="answer in answers") {{answer}}
+    div(layout="row" layout-align="space-between center")
         md-chips(ng-show="data.showAnswers" ng-model="answers")
             md-chip-template
                 span {{$chip}}
-        .md-button.md-accent.md-raised(ng-show="data.showAnswers" ng-click="logAnswer(answers);getQuestion()") Submit
-    div(layout="row" ng-show="type === 'list' && questionNum > 0")
-        div(layout-align="space-between center" flex)
+        md-button.md-accent.md-raised(ng-show="data.showAnswers" ng-click="logAnswer(answers);getQuestion()") Submit
+        //div(layout="row" ng-show="type === 'list' && questionNum > 0")
+        div(layout="row" layout-align="space-between center" flex ng-show="type === 'list' && questionNum > 0")
             md-input-container(ng-repeat="item in list")
                 input(type ="button" ng-model="data.answer" value = "{{item}}" ng-click="logAnswer(item);getQuestion()" aria-label="nolabel" class="md-button md-raised md-primary")
 

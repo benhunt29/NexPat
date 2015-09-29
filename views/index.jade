@@ -1,44 +1,39 @@
 extends layout
 block content
-    //md-toolbar.md-primary.md-whiteframe-z1(md-scroll-shrink)
-    //    md-content(layout="column"  layout-align="start center" class="md-toolbar-tools md-toolbar-tools-bottom")
-    //        md-button(flex layout-fill) home
-    //        md-button(flex layout-fill) users
-    //        md-button(flex layout-fill) login
+    .md-background(layout="column" layout-fill)
+        md-toolbar.md-primary.md-whiteframe-z1(ng-controller="navCtrl" flex="30" layout-padding)
+            //div(class="container")
+            //    div(class="navbar-header")
+            //        a(class="navbar-brand" href="/")
+            //            h1 NextPat
+            //md-content(flex layout = "column")
+            //.md-toolbar-tools
+            //span(flex)
+            div(layout="column" flex)
+                div(layout="row" layout-align="start end")
+                    h1#NextPatTitle.md-display-4() NextPat
+                    div(layout="column" layout-align= "end start")
+                        h3#subtitle.md-headline() A Wanderer's Friend
+                    //span(flex)
+                //span(flex) SPAN
+                //div(layout="row" )
+                div(layout="row" flex layout-align="space-around center" layout-align-md="start center" layout-wrap)
+                    a(href="/")
+                        .md-button(flex) Home
+                    a(href="/questionnaire")
+                        .md-button(flex) Questionnaire
+                    a(href="/about")
+                        .md-button(flex) About
+                    a(href="/help")
+                        .md-button(flex) Help
+                    a(href="/signUp")
+                        .md-button(flex) Sign up
+                    a(href="/login")
+                        .md-button(flex) Sign in
+                    a(ng-click="logout()")
+                        .md-button(flex) Sign out
 
-    md-toolbar.md-primary.md-whiteframe-z1(ng-controller="navCtrl")
-        //div(class="container")
-        //    div(class="navbar-header")
-        //        a(class="navbar-brand" href="/")
-        //            h1 NextPat
-        //md-content(flex layout = "column")
-        //.md-toolbar-tools
-        //span(flex)
-        div(layout="column" flex )
-            div(layout="row" layout-align="start end")
-                h1#NextPatTitle.md-display-4() NextPat
-                div(layout="column" layout-align= "end start")
-                    h3#subtitle.md-headline() A Wanderer's Friend
-                //span(flex)
-            //span(flex) SPAN
-            //div(layout="row" )
-            div(layout="row" flex layout-align="space-around center" layout-align-md="start center" layout-wrap)
-                a(href="/")
-                    .md-button(flex) Home
-                a(href="/questionnaire")
-                    .md-button(flex) Questionnaire
-                a(href="/about")
-                    .md-button(flex) About
-                a(href="/help")
-                    .md-button(flex) Help
-                a(href="/signUp")
-                    .md-button(flex) Sign up
-                a(href="/login")
-                    .md-button(flex) Sign in
-                a(ng-click="logout()")
-                    .md-button(flex) Sign out
-
-
-    #main(layout="column" layout-align="center center")
-        <!-- ng-view will display injected content -->
-        div(ng-view)
+        //span(flex="30")
+        #main(layout="column" layout-align="center center" flex="50" layout-padding)
+            <!-- ng-view will display injected content -->
+            div(ng-view)

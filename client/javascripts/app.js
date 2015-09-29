@@ -9,7 +9,7 @@ app.config(['$httpProvider','$routeProvider','$locationProvider','$mdThemingProv
     $mdThemingProvider
         .theme('default')
         .primaryPalette('blue-grey')
-        .accentPalette('blue')
+        .accentPalette('grey')
         .warnPalette('red')
         .backgroundPalette('blue-grey');
 
@@ -176,12 +176,12 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
         if(answer){
             $scope.answers.push(answer);
             $scope.data.showAnswers = true;
-            console.log('PUSH');
         }
     };
 
     $http.get('/api/questionnaire/'+$rootScope.user.username).
         then(function(userAnswers){
+            console.log($rootScope.user.username);
             if(typeof userAnswers.data == 'object'){
                 $http.post('/api/worldFactbook',{languageOption:true,language:userAnswers.data.question1}).
                     then(function(countriesToSearch){
@@ -323,6 +323,7 @@ app.factory('authInterceptor', ['$q', '$location', 'authService', function ($q, 
             if($location.search().access_token){
                 authService.saveToken($location.search().access_token);
                 $location.search('access_token', undefined);
+                $location.path("/");
             }
 
             if (response.status === 401) {
