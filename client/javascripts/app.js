@@ -1,4 +1,4 @@
-var app = angular.module('NextPat', ['ngRoute','ngMaterial']);
+var app = angular.module('NextPat', ['ngRoute','ngMaterial','ngMessages','validation.match']);
 
 app.config(['$httpProvider','$routeProvider','$locationProvider','$mdThemingProvider', function($httpProvider,$routeProvider, $locationProvider,$mdThemingProvider){
 
@@ -32,11 +32,11 @@ app.config(['$httpProvider','$routeProvider','$locationProvider','$mdThemingProv
         }).when('/signUp',
         {
             templateUrl: '/views/signUp.html',
-            controller: 'loginController'
+            controller: 'signUpController'
         }).when('/questionnaire',
         {
             templateUrl: '/views/questionnaire.html',
-            controller: 'questionnaireController as ctrl'
+            controller: 'questionnaireController'
         }).when('/help',
         {
             templateUrl: '/views/help.html',
@@ -82,6 +82,25 @@ app.controller('contactController',['$scope', function($scope){
 }]);
 
 app.controller('signUpController',['$scope','$http', function($scope,$http){
+    $scope.register = function(){
+
+
+
+        var newUser = {
+            username: $scope.form.userName,
+            email: $scope.form.email,
+            password: $scope.form.password,
+            lastName: $scope.form.lastName,
+            firstName: $scope.form.firstName,
+            passwordConfirm: $scope.form.passwordConfirm
+        };
+        console.log('in here');
+        $http.post('/api/register',newUser)
+            .then(function(response){
+                console.log(response);
+            });
+    }
+
 }]);
 
 app.controller('countryController', ['countryPage','$scope','$http', function(countryPage,$scope,$http){
@@ -528,4 +547,36 @@ app.factory('questionnaire', function () {
 
 app.factory('countryPage',function(){
     return {};
+});
+
+app.directive('comparePasswords', function() {
+    return {
+        // restrict to an attribute type.
+        //restrict: 'A',
+
+        // element must have ng-model attribute.
+        require: 'ngModel',
+        scope: {
+            otherPassword: "=otherPassword"
+        },
+        // scope = the parent scope
+        // elem = the element the directive is on
+        // attr = a dictionary of attributes on the element
+        // ctrl = the controller for ngModel.
+        link: function(scope, elem, attr, ctrl) {
+
+            // add a parser that will process each time the value is
+            // parsed into the model when the user updates it.
+            ngModel.$validators.comparePasswords(function(value) {
+                return value === scope.otherPassword;
+            });
+
+            console.log(scope.otherPassword);
+
+            scope.$watch("otherPassword", function() {
+                ngModel.$validate();
+            });
+
+        }
+    };
 });

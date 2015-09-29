@@ -25,7 +25,11 @@ gulp.task('copy', function () {
 
     var angularMaterialCSS = gulp.src('node_modules/angular-material/angular-material.min.css',{base:'node_modules'}).pipe(gulp.dest('./public/stylesheets/'));
 
-    return merge(angular,angularMaterial,angularAnimate,angularAria,angularRoute,angularMaterialCSS);//angularMaterial,angularAnimate,angularAria,angularRoute);
+    var angularMessages = gulp.src('node_modules/angular-messages/angular-messages.min.js',{base:'node_modules'}).pipe(gulp.dest('./public/vendors/'));
+
+    var angularValidationMatch = gulp.src('node_modules/angular-validation-match/dist/angular-validation-match.min.js',{base:'node_modules'}).pipe(gulp.dest('./public/vendors/'));
+
+    return merge(angular,angularMaterial,angularAnimate,angularAria,angularRoute,angularMaterialCSS,angularMessages,angularValidationMatch);//angularMaterial,angularAnimate,angularAria,angularRoute);
 });
 
 
