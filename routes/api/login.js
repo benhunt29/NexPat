@@ -28,7 +28,7 @@ router.post('/', function(req, res, next) {
         //user has authenticated correctly thus we create a JWT token
         //var token = jwt.encode({ username: 'somedata'}, tokenSecret);
         var userToBeTokenized = { username: user.username };
-        var token = jsonwebtoken.sign(userToBeTokenized, 'supersecret', {
+        var token = jsonwebtoken.sign(userToBeTokenized, process.env.jwtSecret, {
             expiresInMinutes: 1440 // expires in 24 hours
         });
         res.json(token);
@@ -61,12 +61,13 @@ router.get('/auth/google/callback',
     passport.authenticate('google', { session: false, failureRedirect: "/" }),
     function(req, res) {
         var userToBeTokenized = { username: req.user.username };
-        var token = jsonwebtoken.sign(userToBeTokenized, 'supersecret', {
+        var token = jsonwebtoken.sign(userToBeTokenized, process.env.jwtSecret, {
             expiresInMinutes: 1440 // expires in 24 hours
         });
         res.redirect("/?access_token=" + token);
     }
 );
+
 
 
 // Google will redirect the user to this URL after authentication.  Finish

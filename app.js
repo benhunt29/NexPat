@@ -22,11 +22,11 @@ var BearerStrategy = require('passport-http-bearer');
 //Passport Strategies
 var LocalStrategy = require('passport-local').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-var GOOGLE_CLIENT_ID = '466944027920-6l7mdc2q5nghcpmkqrv10lphoe3f78v8.apps.googleusercontent.com';
-var GOOGLE_CLIENT_SECRET = 'bBCiwuKRLS_27tvHIU_0dFQM';
+var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+var GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 var JwtStrategy = require('passport-jwt').Strategy;
 var opts = {};
-opts.secretOrKey = 'supersecret';
+opts.secretOrKey = process.env.jwtSecret;
 opts.passReqToCallback = true;
 
 var app = express();

@@ -56,4 +56,17 @@ router.post('/', function(req, res, next) {
   })
 });
 
+router.delete('/:username', function(req, res, next) {
+  var obj = req.params;
+
+  Questionnaire.findOneAndRemove({username: obj.username}, function (err) {
+
+    if (err) {
+      next(err);
+    } else {
+      res.sendStatus(200);
+    }
+  });
+});
+
 module.exports = router;

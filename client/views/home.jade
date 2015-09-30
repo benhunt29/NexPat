@@ -1,6 +1,9 @@
-div(layout = "column" ng-hide="recommendations" layout-align = "center center")
+div(layout = "column" ng-hide="user.username" layout-align = "center center")
     div(layout = "row" layout-align="center end" )
         h1.md-display-3(flex="80") {{question}}
-    div(layout="row")
+    div(layout="row" ng-show="showButtons")
         md-button.md-accent.md-raised(ng-click='getQuestion(true)') Yes
         md-button.md-accent.md-raised(ng-click='getQuestion(false)') No
+div(ng-show="recommendations") Recommended Countries
+    div(ng-repeat="country in recommendations")
+        a(href="/country" ng-click="setCountryPage(country.countryName)") {{country.countryName}}

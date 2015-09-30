@@ -1,11 +1,11 @@
-div(layout = "column" ng-hide="recommendations" layout-align = "center center")
-    div(layout = "row" layout-align="center end" )
-        //span(flex="20")
-        h1.md-display-3(flex="80") {{question}}
-        //span(flex="20")
+div(layout = "column" layout-align = "center center" ng-hide="recommendations")
+    div(layout = "row" layout-align="center center" )
+        span(flex)
+        h1.md-display-3 {{question}}
+        span(flex)
     div(layout="row" ng-show="type === 'boolean'")
-        md-button.md-raised(ng-click='logAnswer(true);getQuestion()') Yes
-        md-button.md-raised(ng-click='logAnswer(false);getQuestion()') No
+        md-button.md-accent.md-raised(ng-click='logAnswer(true);getQuestion()') Yes
+        md-button.md-accent.md-raised(ng-click='logAnswer(false);getQuestion()') No
     div.md-padding(layout = "row" ng-show="questionNum == 0" layout-align = "center start" flex="50")
         md-autocomplete(
             md-selected-item-change="pushAnswer(data.answer.display)"
@@ -29,10 +29,9 @@ div(layout = "column" ng-hide="recommendations" layout-align = "center center")
         div(layout="row" layout-align="space-between center" flex ng-show="type === 'list' && questionNum > 0")
             md-input-container(ng-repeat="item in list")
                 input(type ="button" ng-model="data.answer" value = "{{item}}" ng-click="logAnswer(item);getQuestion()" aria-label="nolabel" class="md-button md-raised md-primary")
+md-button.md-accent.md-raised(ng-show="recommendations" ng-click="deleteQuestionnaire()") Retake the Questionnaire
 
-div(ng-show="user.username" ng-click="addCountry()") User Countries
-    div {{userCountries}}
-div(ng-show="recommendations[0].countryName") Top Recommended Countries
-    div(ng-repeat="country in recommendations")
-        a(href="/country" ng-click="setCountryPage(country.countryName)") {{country.countryName}}
+//div(ng-show="recommendations[0].countryName") Top Recommended Countries
+//    div(ng-repeat="country in recommendations")
+//        a(href="/country" ng-click="setCountryPage(country.countryName)") {{country.countryName}}
 

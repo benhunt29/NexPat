@@ -16,7 +16,7 @@ app.config(['$httpProvider','$routeProvider','$locationProvider','$mdThemingProv
     $routeProvider.when('/',
         {
             templateUrl: '/views/home.html',
-            controller: 'mainController'
+            controller: 'homeController'
         }).when('/about',
         {
             templateUrl: '/views/about.html',
@@ -50,31 +50,56 @@ app.config(['$httpProvider','$routeProvider','$locationProvider','$mdThemingProv
     });
 }]);
 
-app.controller('mainController', ['$scope','$location', function($scope,$location){
+app.controller('homeController', ['authService','countryPage','questionnaire','userRecommendations','$http','$rootScope','$scope','$location', function(authService,countryPage,questionnaire,userRecommendations,$http,$rootScope,$scope,$location){
 
-    var introQuestions = [{question: "Have you been here before?", route:'login'},
-        {question: "Would you like to sign up?", route: 'signUp'},
-        {question: "Okay, your information will not be saved."}];
-    $scope.question = introQuestions[0].question;
-    var questionNum = 0;
-    $scope.showButtons = true;
-    $scope.getQuestion = function(answer) {
-        var questionText = introQuestions[questionNum].question;
-        var route = introQuestions[questionNum].route;
-        if (answer) {
-            $location.path(route);
-        } else{
-            questionNum++;
-            $scope.question = introQuestions[questionNum].question;
-            if(questionNum == introQuestions.length-1){
-                $scope.showButtons = false;
+    $rootScope.user = authService.getUser();
+
+    if($rootScope.user && $rootScope.user.username){
+        if(!$scope.recommendations){
+            if (userRecommendations.countries){
+                $scope.recommendations = userRecommendations.countries;
+            } else {
+                $http.get('/api/questionnaire/'+$rootScope.user.username).
+                    then(function(userAnswers){
+                        console.log($rootScope.user.username);
+                        if(typeof userAnswers.data == 'object'){
+                            $http.post('/api/worldFactbook',{languageOption:true,language:userAnswers.data.question1}).
+                                then(function(countriesToSearch){
+                                    console.log(userAnswers,countriesToSearch);
+                                    $scope.recommendations = questionnaire.determineRecommendations(userAnswers.data,countriesToSearch.data);
+                                    userRecommendations.countries = $scope.recommendations;
+                                });
+                        }else {
+                            $location.path('/questionnaire');
+                        }
+                    });
             }
         }
-    };
+    } else{
+            var introQuestions = [{question: "Have you been here before?", route:'login'},
+                {question: "Would you like to sign up?", route: 'signUp'},
+                {question: "Okay, you won't be able to do much..."}];
+            $scope.question = introQuestions[0].question;
+            var questionNum = 0;
+            $scope.showButtons = true;
+            $scope.getQuestion = function(answer) {
+                var questionText = introQuestions[questionNum].question;
+                var route = introQuestions[questionNum].route;
+                if (answer) {
+                    $location.path(route);
+                } else{
+                    questionNum++;
+                    $scope.question = introQuestions[questionNum].question;
+                    if(questionNum == introQuestions.length-1){
+                        $scope.showButtons = false;
+                    }
+                }
+            };
+        }
+
 }]);
 
 app.controller('aboutController', ['$scope',function($scope){
-    $scope.message = "I'm a page that describes this application!";
 }]);
 
 app.controller('contactController',['$scope', function($scope){
@@ -83,8 +108,6 @@ app.controller('contactController',['$scope', function($scope){
 
 app.controller('signUpController',['$scope','$http', function($scope,$http){
     $scope.register = function(){
-
-
 
         var newUser = {
             username: $scope.form.userName,
@@ -109,30 +132,28 @@ app.controller('countryController', ['countryPage','$scope','$http', function(co
 }]);
 
 app.controller('loginController', ['$scope', '$http', 'authService', '$location', '$rootScope', function($scope, $http, authService, $location, $rootScope){
-    $scope.submit = function(){
-        $http.post('api/login', $scope.form)
+    $scope.login = function(){
+
+        var user = {
+            username: $scope.form.userName,
+            password: $scope.form.password
+        };
+
+        $http.post('api/login', user)
             .then(function (response) {
                 authService.saveToken(response.data);
                 $rootScope.user = authService.getUser();
-                $location.path("/questionnaire");
+                $location.path("/");
             });
     };
 
-    $scope.googleLogin = function(){
-        //$http.get('/api/login/auth/google')
-        //    .then(function (response) {
-        //        authService.saveToken(response.data);
-        //        $rootScope.user = authService.getUser();
-        //        $location.path("/questionnaire");
-        //    });
-    }
 }]);
 
 app.controller('navCtrl', ['authService','$scope','$rootScope','$location','$http', function(authService, $scope,$rootScope, $location,$http){
     $rootScope.user = authService.getUser();
 
     if($rootScope.user && $rootScope.user.username){
-        $location.path('/questionnaire');
+        $location.path('/');
     }
 
     $scope.logout = function(){
@@ -143,7 +164,7 @@ app.controller('navCtrl', ['authService','$scope','$rootScope','$location','$htt
             });
         authService.logout();
         $rootScope.user = authService.getUser();
-        $location.path("/login");
+        $location.path("/home");
     }
 }]);
 
@@ -151,17 +172,20 @@ app.controller('helpController',['$scope', function($scope){
     $scope.message = "I'm a help page that currently doesn't help at all";
 }]);
 
-app.controller('questionnaireController',['countryPage','questionnaire','$rootScope','$scope','$location', '$http','$log','$q',function(countryPage,questionnaire,$rootScope,$scope,$location,$http,$log,$q){
+app.controller('questionnaireController',['countryPage','userRecommendations','questionnaire','$rootScope','$scope','$location', '$http','$log','$q',function(countryPage,userRecommendations,questionnaire,$rootScope,$scope,$location,$http,$log,$q){
 
-
+    if(!$rootScope.user.username){
+        $location.path('/login');
+    }
 
     var questions = questionnaire.questions;
     var questionResponses = {};
     var userQuestionnaire = {};
-    var recommendations;
+
     $scope.questionNum = 0;
     $scope.data = {};
-
+    $scope.data = {};
+    $scope.answers = [];
 
 
     $scope.querySearch = function(query) {
@@ -187,10 +211,6 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
         };
     }
 
-    $scope.data = {};
-    //$scope.data.showAnswers = false;
-
-    $scope.answers = [];
     $scope.pushAnswer = function(answer){
         if(answer){
             $scope.answers.push(answer);
@@ -204,7 +224,9 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
             if(typeof userAnswers.data == 'object'){
                 $http.post('/api/worldFactbook',{languageOption:true,language:userAnswers.data.question1}).
                     then(function(countriesToSearch){
+                        console.log(userAnswers,countriesToSearch);
                         $scope.recommendations = questionnaire.determineRecommendations(userAnswers.data,countriesToSearch.data);
+                        userRecommendations.countries = $scope.recommendations;
                 });
             }else{
                 $scope.getQuestion();
@@ -212,27 +234,19 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
             }
         });
 
-
-
-    //$scope.type = questions[0].type;
-    //console.log(questions[0].answerOptions);
-    //$scope.question = questions[0].question;
-    //$scope.list = questions[0].answerOptions;
     $scope.getQuestion = function(){
         $scope.data.showAnswers = false;
 
-        console.log($scope.data.showAnswers);
         if($scope.questionNum==questions.length){
-            //$scope.questionNum++;
-            //questionResponses["question"+($scope.questionNum-1)] = $scope.data.answer;
             $scope.question = 'Your list is being generated!';
             userQuestionnaire.username = $rootScope.user.username;
             userQuestionnaire.questionResponses = questionResponses;
-            console.log(userQuestionnaire);
             $http.post('/api/questionnaire',userQuestionnaire);
             $http.post('/api/worldFactbook',{languageOption:true,language:questionResponses.question1}).
                 then(function(countriesToSearch){
                     $scope.recommendations = questionnaire.determineRecommendations(questionResponses,countriesToSearch.data);
+                    userRecommendations.countries = $scope.recommendations;
+                    $location.path('/');
                 });
             $scope.type = '';
         }else{
@@ -241,18 +255,15 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
             console.log($scope.question, $scope.type);
             if($scope.type == 'list'){
                 $scope.list = questions[$scope.questionNum].answerOptions;
-                //$scope.list = loadAll();
             }
-            //$scope.questionNum++;
-            //$scope.data.showAnswers = false;
+
         }
     };
     $scope.logAnswer = function(answer){
         $scope.data.showAnswers = false;
-        console.log($scope.data.showAnswers);
 
         $scope.questionNum++;
-        //answer ? questionResponses["question"+($scope.questionNum)] = answer: questionResponses["question"+($scope.questionNum)] = $scope.answers;
+
         if(answer.constructor === Array){
             answer = answer.join(' ')
         }
@@ -261,17 +272,9 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
         $scope.answers = [];
         $scope.searchText = '';
 
-        //$scope.$apply($scope.showAnswers = false);
-        console.log(questionResponses);
     };
 
     $scope.addCountry = function(){
-
-        //console.log($rootScope.username);
-        //$http.post('/api/userCountries',{username: $rootScope.user.username}).
-        //    then(function(response){
-        //        $scope.userCountries = response.userCountries;
-        //    });
         $http.post('/api/userCountries',{username: $rootScope.user.username,userCountries: ['france','germany','spain']}).
             then(function(response){
                 $scope.userCountries = response.userCountries;
@@ -280,6 +283,18 @@ app.controller('questionnaireController',['countryPage','questionnaire','$rootSc
 
     $scope.setCountryPage = function(countryName){
         countryPage.name = countryName;
+    };
+
+    $scope.deleteQuestionnaire = function(){
+        $http.delete('api/questionnaire/'+$rootScope.user.username)
+            .then(function(response){
+                console.log('deleted!');
+                userRecommendations = {};
+                $scope.recommendations = false;
+                $scope.questionNum = 0;
+                $scope.getQuestion();
+                $scope.list = loadAll();
+        });
     }
 
 }]);
@@ -549,34 +564,6 @@ app.factory('countryPage',function(){
     return {};
 });
 
-app.directive('comparePasswords', function() {
-    return {
-        // restrict to an attribute type.
-        //restrict: 'A',
-
-        // element must have ng-model attribute.
-        require: 'ngModel',
-        scope: {
-            otherPassword: "=otherPassword"
-        },
-        // scope = the parent scope
-        // elem = the element the directive is on
-        // attr = a dictionary of attributes on the element
-        // ctrl = the controller for ngModel.
-        link: function(scope, elem, attr, ctrl) {
-
-            // add a parser that will process each time the value is
-            // parsed into the model when the user updates it.
-            ngModel.$validators.comparePasswords(function(value) {
-                return value === scope.otherPassword;
-            });
-
-            console.log(scope.otherPassword);
-
-            scope.$watch("otherPassword", function() {
-                ngModel.$validate();
-            });
-
-        }
-    };
+app.factory('userRecommendations',function(){
+    return {};
 });

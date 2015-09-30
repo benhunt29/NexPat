@@ -1,12 +1,23 @@
-form.col-md-12(ng-submit = "submit()")
-   div(class = "input-group col-md-6")
-      span.input-group-addon#username Username
-      input.form-control(type="text" name="username" id="username" placeholder="Username" aria-describedby="username" ng-model = "form.username")
-   div(class = "input-group col-md-6")
-      span.input-group-addon#password Password
-      //label.form-control(for="password") Password:
-      input.form-control(type="password" name="password" id="password" placeholder="Password" ng-model = "form.password")
-   div(class = "input-group col-md-6")
-      input(type="submit" value="Log In")
+//form.col-md-12(ng-submit = "submit()")
+//   div(class = "input-group col-md-6")
+//      span.input-group-addon#username Username
+//      input.form-control(type="text" name="username" id="username" placeholder="Username" aria-describedby="username" ng-model = "form.username")
+//   div(class = "input-group col-md-6")
+//      span.input-group-addon#password Password
+//      //label.form-control(for="password") Password:
+//      input.form-control(type="password" name="password" id="password" placeholder="Password" ng-model = "form.password")
+//   div(class = "input-group col-md-6")
+//      input(type="submit" value="Log In")
 
-a(href="/api/login/auth/google" target="_self" ng-click = "googleLogin()") Sign In with Google
+form(name="login" ng-submit="login()")
+   md-input-container(flex)
+      label Username
+      input(type="text" name="username" ng-model="form.userName" required ng-minlength="1")
+   md-input-container(flex)
+      label Password
+      input(type="password" name="password" ng-model="form.password" required ng-minlength="1")
+   div(layout="row" layout-sm="column" layout-align="center center")
+      input.md-button.md-primary.md-raised(type="submit" layout-fill value="login" ng-disabled="login.$invalid")
+
+   a(href="/api/login/auth/google" target="_self" ng-click = "googleLogin()")
+      #googleSignIn
