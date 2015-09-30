@@ -4,6 +4,17 @@ div(layout = "column" ng-hide="user.username" layout-align = "center center")
     div(layout="row" ng-show="showButtons")
         md-button.md-accent.md-raised(ng-click='getQuestion(true)') Yes
         md-button.md-accent.md-raised(ng-click='getQuestion(false)') No
-div(ng-show="recommendations") Recommended Countries
-    div(ng-repeat="country in recommendations")
-        a(href="/country" ng-click="setCountryPage(country.countryName)") {{country.countryName}}
+//div(ng-show="recommendations") Recommended Countries
+//    div(ng-repeat="country in recommendations")
+//        a(href="/country" ng-click="setCountryPage(country.countryName)") {{country.countryName}}
+
+md-content(layout-padding layout-margin layout-fill layout-align="center center" layout="column" ng-show="recommendations")
+    h1.md-display-2(layout-padding) Recommended Countries
+    md-list
+        md-list-item(ng-repeat="country in recommendations" flex )
+            //.md-list-item-text Agriculture: farming, fishing, and forestry
+            .md-button.md-primary(flex ng-click="setCountryPage(country.countryName,country.abbreviation)" name="country.countryName") {{country.countryName}}
+        //md-list-item
+        //    .md-list-item-text Industry: mining, manufacturing, energy production, and construction
+        //md-list-item
+        //    .md-list-item-text Services: government activities, communications, transportation, finance, and all other economic activities that do not produce material goods

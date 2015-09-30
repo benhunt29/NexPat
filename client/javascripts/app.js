@@ -97,6 +97,13 @@ app.controller('homeController', ['authService','countryPage','questionnaire','u
             };
         }
 
+    $scope.setCountryPage = function(countryName,abbreviation){
+
+        countryPage.name = countryName;
+        countryPage.abbreviation = abbreviation;
+        $location.path('/country');
+    };
+
 }]);
 
 app.controller('aboutController', ['$scope',function($scope){
@@ -106,7 +113,7 @@ app.controller('contactController',['$scope', function($scope){
     $scope.message = "I'm a page that tells you how to yell (by writing an all-caps email) at the developer!";
 }]);
 
-app.controller('signUpController',['$scope','$http', function($scope,$http){
+app.controller('signUpController',['$location','$scope','$http', function($location,$scope,$http){
     $scope.register = function(){
 
         var newUser = {
@@ -117,10 +124,10 @@ app.controller('signUpController',['$scope','$http', function($scope,$http){
             firstName: $scope.form.firstName,
             passwordConfirm: $scope.form.passwordConfirm
         };
-        console.log('in here');
         $http.post('/api/register',newUser)
             .then(function(response){
                 console.log(response);
+                $location.path('/login');
             });
     }
 
@@ -128,12 +135,108 @@ app.controller('signUpController',['$scope','$http', function($scope,$http){
 
 app.controller('countryController', ['countryPage','$scope','$http', function(countryPage,$scope,$http){
     $scope.countryName = countryPage.name;
-    console.log($scope.nationMasterLink);
+    $scope.abbreviation = countryPage.abbreviation;
+
+    var worldBankIndicators = [
+        {
+            indicatorDescription: 'Researchers in R&D (per million people)',
+            indicatorCode: 'SP_POP_SCIE_RD_P6'
+        },
+        {
+            indicatorDescription: 'Research and development expenditure (% of GDP)',
+            indicatorCode: 'GB_XPD_RSDV_GD_ZS'
+        },
+        {
+            indicatorDescription: 'Agricultural land (% of land area)',
+            indicatorCode: 'AG.LND.AGRI.ZS'
+        },
+        {
+            indicatorDescription: 'Forest area (% of land area)',
+            indicatorCode: 'AG.LND.FRST.ZS'
+        },
+        {
+            indicatorDescription: 'Land area (sq. km)',
+            indicatorCode: 'AG.LND.TOTL.K2'
+        },
+        {
+            indicatorDescription: 'GDP (current US$)',
+            indicatorCode: 'NY.GDP.MKTP.CD'
+        },
+        {
+            indicatorDescription: 'GNI per capita, Atlas method (current US$)',
+            indicatorCode: 'NY.GNP.PCAP.CD'
+        },
+        {
+            indicatorDescription: 'Population growth (annual %)',
+            indicatorCode: 'SP.POP.GROW'
+        },
+        {
+            indicatorDescription: 'Population, total',
+            indicatorCode: 'SP.POP.TOTL'
+        },
+        {
+            indicatorDescription: 'GDP per Capita, constant US$, millions',
+            indicatorCode: 'GDPPCKD'
+        },
+        {
+            indicatorDescription: 'Unemployment, total (% of total labor force)',
+            indicatorCode: 'SL.UEM.TOTL.ZS'
+        },
+        {
+            indicatorDescription: 'Fossil fuel energy consumption (% of total)',
+            indicatorCode: 'EG.USE.COMM.FO.ZS'
+        },
+        {
+            indicatorDescription: 'Pump price for gasoline (US$ per liter)',
+            indicatorCode: 'EP.PMP.SGAS.CD'
+        },
+        {
+            indicatorDescription: 'Forest area (% of land area)',
+            indicatorCode: 'AG.LND.FRST.ZS'
+        },{
+            indicatorDescription: 'Life expectancy at birth, total (years)',
+            indicatorCode: 'SP.DYN.LE00.IN'
+        },
+        {
+            indicatorDescription: 'Mobile cellular subscriptions (per 100 people)',
+            indicatorCode: 'IT.CEL.SETS.P2'
+        },
+        {
+            indicatorDescription: '',
+            indicatorCode: ''
+        },
+        {
+            indicatorDescription: '',
+            indicatorCode: ''
+        },
+        {
+            indicatorDescription: '',
+            indicatorCode: ''
+        },
+        {
+            indicatorDescription: '',
+            indicatorCode: ''
+        },
+        {
+            indicatorDescription: '',
+            indicatorCode: ''
+        },
+        {
+            indicatorDescription: '',
+            indicatorCode: ''
+        },
+
+
+
+    ];
+    var worldBankAPIQuery = 'http://api.worldbank.org/' + $scope.abbreviation + 'country/by/indicator/sp.pop.totl;sp.pop.grow;se.prm.ages?source=2&per_page=1000&date=2015:2015&format=json';
+    //$http.get()
+
+
 }]);
 
 app.controller('loginController', ['$scope', '$http', 'authService', '$location', '$rootScope', function($scope, $http, authService, $location, $rootScope){
-    $scope.login = function(){
-
+    $scope.signIn = function(){
         var user = {
             username: $scope.form.userName,
             password: $scope.form.password
@@ -563,6 +666,62 @@ app.factory('questionnaire', function () {
 app.factory('countryPage',function(){
     return {};
 });
+
+//app.factory('countryAbbreviations',function(){
+//    return {
+//        getAbbreviation: function(countryName){
+//            var countryNames = [ 'andorra',
+//                'albania',
+//                'armenia',
+//                'austria',
+//                'azerbaijan',
+//                'Bosnia and Herzegovina',
+//                'belgium',
+//                'bulgaria',
+//                'belarus',
+//                'switzerland',
+//                'cyprus',
+//                'czech-republic',
+//                'germany',
+//                'denmark',
+//                'estonia',
+//                'liechtenstein',
+//                'finland',
+//                'spain',
+//                'france',
+//                'great-britain',
+//                'croatia',
+//                'georgia',
+//                'greece',
+//                'hungary',
+//                'ireland',
+//                'iceland',
+//                'italy',
+//                'lithuania',
+//                'luxembourg',
+//                'latvia',
+//                'monaco',
+//                'moldova',
+//                'montenegro',
+//                'macedonia',
+//                'malta',
+//                'netherlands',
+//                'norway',
+//                'poland',
+//                'portugal',
+//                'romania',
+//                'serbia',
+//                'sweden',
+//                'russia',
+//                'slovakia',
+//                'slovenia',
+//                'san-marino',
+//                'ukraine',
+//                'turkey',
+//                'vatican-city' ]
+//        }
+//    }
+//});
 
 app.factory('userRecommendations',function(){
     return {};

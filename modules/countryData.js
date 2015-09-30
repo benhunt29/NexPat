@@ -2,8 +2,9 @@
 var countryList = function(searchResults){
     var countries = [];
 
-    function ReturnedCountry(countryName,labor,climate,perCapitaPPP,urbanPopulation,largestCityPop,medianAge,internetUsagePerCapita){
+    function ReturnedCountry(countryName,abbreviation,labor,climate,perCapitaPPP,urbanPopulation,largestCityPop,medianAge,internetUsagePerCapita){
         this.countryName = countryName;
+        this.abbreviation = abbreviation;
         this.labor = labor;
         this.climate = climate;
         this.perCapitaPPP = perCapitaPPP;
@@ -19,6 +20,7 @@ var countryList = function(searchResults){
 
     searchResults.forEach(function(item,index) {
         var countryName = capitalizeFirstLetter(item.name.name);
+        var abbreviation = item.name.abbreviation;
         var laborAg = parseFloat(item.econ.labor_force_by_occupation.agriculture);
         var laborInd = parseFloat(item.econ.labor_force_by_occupation.industry);
         var laborSvc = parseFloat(item.econ.labor_force_by_occupation.services);
@@ -42,7 +44,7 @@ var countryList = function(searchResults){
         var urbanPopulation = parseFloat(item.people.urbanization.urban_population);
         var medianAge = parseFloat(item.people.median_age.total);
         var internetUsagePerCapita = 100*parseFloat(item.comm.internet_users.text) / parseFloat(item.people.population.text);
-        var country = new ReturnedCountry(countryName,labor,climate,perCapitaPPP,urbanPopulation,largestCityPop,medianAge,internetUsagePerCapita);
+        var country = new ReturnedCountry(countryName,abbreviation,labor,climate,perCapitaPPP,urbanPopulation,largestCityPop,medianAge,internetUsagePerCapita);
         countries.push(country);
     });
 
