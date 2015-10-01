@@ -13,7 +13,8 @@ var logout = require('./routes/api/logout');
 var worldFactbook = require('./routes/api/worldFactbook');
 var userCountries = require('./routes/api/userCountries');
 var questionnaire = require('./routes/api/questionnaire');
-var worldBank = require('./routes/worldBank/worldBankData');
+var worldBank = require('./routes/externalAPIs/worldBankData');
+var mediWiki = require('./routes/externalAPIs/mediWiki');
 
 var Users = require('./models/users');
 
@@ -213,7 +214,8 @@ app.use('/api/userCountries', userCountries);
 app.use('/api/login', login);
 app.use('/api/logout', logout);
 app.use('/api/questionnaire', questionnaire);
-app.use('/worldBank/worldBankData',worldBank);
+app.use('/externalAPIs/worldBankData',worldBank);
+app.use('/externalAPIs/mediWiki',mediWiki);
 app.use('/*', function (req, res, next) {
     if (req.url.contains('.')) { // exclude files
         next();

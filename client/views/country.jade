@@ -1,18 +1,33 @@
-div(layout-margin layout-padding layout-align = "center center")
-   div(layout="row" layout-sm="column" layout-align="center center")
-      h1.md-display-3 {{countryName}}
-md-content(layout-padding layout-margin layout-fill layout-align="center center" layout="column")
-   h1.md-display-2(layout-padding) Recommended Countries
-   md-list
-      md-list-item(ng-repeat="statistic in worldBankData" flex )
-         p {{statistic.indicator}}
-         p {{statistic.year}}
-         p {{statistic.value}}
+div(layout-margin layout-padding layout-align = "center center" layout="column")
+   div(layout="row" layout-sm="row" layout-align="space-between center" flex layout-fill)
+      h1.md-display-4 {{countryName}}
+      #flag(ng-style="{'background-image':'url(' + flagUrl + ')'}" alt="")
 
-div Further Resources
-   a(ng-href="http://www.nationmaster.com/country-info/profiles/{{countryName}}") {{countryName}}
-   a(href="http://www.transitionsabroad.com/") Transitions Abroad
-   a(href="http://internationalliving.com/") International Living
-   a(href="http://www.expatinfodesk.com/") Expat Info Desk
-   a(href="http://www.numbeo.com/cost-of-living/") Cost of Living List
-   a(hret="http://www.numbeo.com/quality-of-life/rankings_by_country.jsp?title=2015-mid&region=150)") Quality of Life
+   md-content(layout-padding layout-margin layout-fill layout-align="center end" layout="row")
+      md-list
+         md-list-item.md-3-line(ng-repeat="statistic in worldBankData.column1" flex )
+            .md-list-item-text(layout="column")
+               h3 {{statistic.indicator}}
+               h4 Year: {{statistic.year}}
+               p Value: {{statistic.value}}
+      md-list
+         md-list-item.md-3-line(ng-repeat="statistic in worldBankData.column2" flex )
+            .md-list-item-text(layout="column")
+               h3 {{statistic.indicator}}
+               h4 Year: {{statistic.year}}
+               p Value: {{statistic.value}}
+
+div(layout="row")
+   a(ng-href="http://www.nationmaster.com/country-info/profiles/{{countryName}}")
+      md-button.md-primary.md-raised.md-hue-1(flex) NationMaster
+   a(href="http://www.transitionsabroad.com/")
+      md-button.md-primary.md-raised.md-hue-1(flex) Transitions Abroad
+   a(href="http://internationalliving.com/")
+      md-button.md-primary.md-raised.md-hue-1(flex) International Living
+   a(href="http://www.expatinfodesk.com/")
+      md-button.md-primary.md-raised.md-hue-1(flex) Expat Info Desk
+   a(href="http://www.numbeo.com/cost-of-living/")
+      md-button.md-primary.md-raised.md-hue-1(flex) Cost of Living List
+   a(href="http://www.numbeo.com/quality-of-life/rankings_by_country.jsp?title=2015-mid&region=150")
+      md-button.md-primary.md-raised.md-hue-1(flex) Quality of Life
+

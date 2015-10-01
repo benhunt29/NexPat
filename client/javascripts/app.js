@@ -139,12 +139,20 @@ app.controller('signUpController',['$location','$scope','$http', function($locat
 app.controller('countryController', ['sharedService','countryPage','$scope','$http', function(sharedService,countryPage,$scope,$http){
     $scope.countryName = countryPage.name;
     $scope.abbreviation = countryPage.abbreviation;
-    $scope.worldBankData = {};
+    //$scope.worldBankData = {
+    //    column1: {
+    //        indicator: "ARE YOU ",
+    //        year: "READY FOR ",
+    //        value: "SOME DATA?!"
+    //    }
+    //};
 
     var getData = function(){
-        $http.get('/worldBank/worldBankData/'+$scope.abbreviation)
+        $http.get('/externalAPIs/worldBankData/'+$scope.abbreviation)
             .then(function(response){
-                $scope.worldBankData = response.data;
+                $scope.worldBankData.column1 = response.data.slice(0,4);
+                $scope.worldBankData.column2 = response.data.slice(0,4);
+
                 //sharedService.worldBankDataUpdate();
                 console.log(response.data);
 
@@ -160,6 +168,24 @@ app.controller('countryController', ['sharedService','countryPage','$scope','$ht
     //});
 
     getData();
+
+    var mediWikiCountryName = $scope.countryName.replace(/\s/g,'_');
+
+    var getFlag = function(){
+        $http.get('/externalAPIs/mediWiki/'+ mediWikiCountryName)
+            .then(function(response){
+                $scope.flagUrl = response.data;
+                //sharedService.worldBankDataUpdate();
+                console.log($scope.flagUrl);
+
+            },function errorCallback(response){
+                $scope.data = "There was an error, try again later!";
+                console.log(response);
+                //$scope.$apply();
+            });
+    };
+
+    getFlag();
 
 }]);
 

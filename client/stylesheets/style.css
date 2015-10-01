@@ -27,7 +27,14 @@
     margin:auto;
 }
 
-/*a {*/
-    /*text-decoration: none;*/
-    /*color: black;*/
-/*}*/
+#flag{
+    background-size: 220px;
+    height: 132px;
+    width: 220px;
+    margin:auto;
+    background-repeat: no-repeat;
+}
+
+.columns {
+    columns: 3;
+}
