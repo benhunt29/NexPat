@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
+
 var index = require('./routes/index');
 var register = require('./routes/api/register');
 var login = require('./routes/api/login');
@@ -12,13 +13,12 @@ var logout = require('./routes/api/logout');
 var worldFactbook = require('./routes/api/worldFactbook');
 var userCountries = require('./routes/api/userCountries');
 var questionnaire = require('./routes/api/questionnaire');
+var worldBank = require('./routes/worldBank/worldBankData');
+
 var Users = require('./models/users');
-var BearerStrategy = require('passport-http-bearer');
-//var questionnaire = require('./routes/api/questionnaire');
-//var session = require('express-session');
-//var flash = require('express-flash');
 
 //Passport Strategies
+var BearerStrategy = require('passport-http-bearer');
 var LocalStrategy = require('passport-local').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
@@ -213,6 +213,7 @@ app.use('/api/userCountries', userCountries);
 app.use('/api/login', login);
 app.use('/api/logout', logout);
 app.use('/api/questionnaire', questionnaire);
+app.use('/worldBank/worldBankData',worldBank);
 app.use('/*', function (req, res, next) {
     if (req.url.contains('.')) { // exclude files
         next();
@@ -234,6 +235,7 @@ app.use(function (req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
+        console.log(err);
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
@@ -245,6 +247,7 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function (err, req, res, next) {
+    console.log(err);
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,

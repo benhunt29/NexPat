@@ -4,6 +4,9 @@ app.config(['$httpProvider','$routeProvider','$locationProvider','$mdThemingProv
 
     $locationProvider.html5Mode(true);
 
+    $httpProvider.defaults.useXDomain = true;
+    delete $httpProvider.defaults.headers.common['X-Requested-With'];
+
     $httpProvider.interceptors.push('authInterceptor');
 
     $mdThemingProvider
@@ -137,100 +140,61 @@ app.controller('countryController', ['countryPage','$scope','$http', function(co
     $scope.countryName = countryPage.name;
     $scope.abbreviation = countryPage.abbreviation;
 
-    var worldBankIndicators = [
-        {
-            indicatorDescription: 'Researchers in R&D (per million people)',
-            indicatorCode: 'SP_POP_SCIE_RD_P6'
-        },
-        {
-            indicatorDescription: 'Research and development expenditure (% of GDP)',
-            indicatorCode: 'GB_XPD_RSDV_GD_ZS'
-        },
-        {
-            indicatorDescription: 'Agricultural land (% of land area)',
-            indicatorCode: 'AG.LND.AGRI.ZS'
-        },
-        {
-            indicatorDescription: 'Forest area (% of land area)',
-            indicatorCode: 'AG.LND.FRST.ZS'
-        },
-        {
-            indicatorDescription: 'Land area (sq. km)',
-            indicatorCode: 'AG.LND.TOTL.K2'
-        },
-        {
-            indicatorDescription: 'GDP (current US$)',
-            indicatorCode: 'NY.GDP.MKTP.CD'
-        },
-        {
-            indicatorDescription: 'GNI per capita, Atlas method (current US$)',
-            indicatorCode: 'NY.GNP.PCAP.CD'
-        },
-        {
-            indicatorDescription: 'Population growth (annual %)',
-            indicatorCode: 'SP.POP.GROW'
-        },
-        {
-            indicatorDescription: 'Population, total',
-            indicatorCode: 'SP.POP.TOTL'
-        },
-        {
-            indicatorDescription: 'GDP per Capita, constant US$, millions',
-            indicatorCode: 'GDPPCKD'
-        },
-        {
-            indicatorDescription: 'Unemployment, total (% of total labor force)',
-            indicatorCode: 'SL.UEM.TOTL.ZS'
-        },
-        {
-            indicatorDescription: 'Fossil fuel energy consumption (% of total)',
-            indicatorCode: 'EG.USE.COMM.FO.ZS'
-        },
-        {
-            indicatorDescription: 'Pump price for gasoline (US$ per liter)',
-            indicatorCode: 'EP.PMP.SGAS.CD'
-        },
-        {
-            indicatorDescription: 'Forest area (% of land area)',
-            indicatorCode: 'AG.LND.FRST.ZS'
-        },{
-            indicatorDescription: 'Life expectancy at birth, total (years)',
-            indicatorCode: 'SP.DYN.LE00.IN'
-        },
-        {
-            indicatorDescription: 'Mobile cellular subscriptions (per 100 people)',
-            indicatorCode: 'IT.CEL.SETS.P2'
-        },
-        {
-            indicatorDescription: '',
-            indicatorCode: ''
-        },
-        {
-            indicatorDescription: '',
-            indicatorCode: ''
-        },
-        {
-            indicatorDescription: '',
-            indicatorCode: ''
-        },
-        {
-            indicatorDescription: '',
-            indicatorCode: ''
-        },
-        {
-            indicatorDescription: '',
-            indicatorCode: ''
-        },
-        {
-            indicatorDescription: '',
-            indicatorCode: ''
-        },
+    $http.get('/worldBank/worldBankData/'+$scope.abbreviation)
+        .then(function(response){
+            console.log(response);
+        });
 
-
-
-    ];
-    var worldBankAPIQuery = 'http://api.worldbank.org/' + $scope.abbreviation + 'country/by/indicator/sp.pop.totl;sp.pop.grow;se.prm.ages?source=2&per_page=1000&date=2015:2015&format=json';
-    //$http.get()
+    //var combinedIndicators = '';
+    //worldBankIndicators.forEach(function(item,index){
+    //        combinedIndicators += item.indicatorCode +';';
+    //    });
+    //
+    //combinedIndicators = combinedIndicators.substring(0,combinedIndicators.length-1);
+    //
+    //var worldBankAPIQuery1 = 'http://api.worldbank.org/country/' + $scope.abbreviation + '/indicator/' + combinedIndicators + '?source=2&per_page=100&date=2006:2015&format=json';
+    //$http(
+    //    {
+    //        url: worldBankAPIQuery1,
+    //        headers:{
+    //            'Access-Control-Allow-Origin': '*',
+    //            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    //            'Access-Control-Allow-Headers': 'Content-Type, X-Requested-With'
+    //            //'X-Random-Shit':'123123123'
+    //        }
+    //    })
+    //    .then(function(results){
+    //       $scope.worldBankInfo = results;
+    //        console.log(results);
+    //
+    //        results.shift();
+    //        results = results[0];
+    //        var compiledIndicators = [];
+    //        var indicatorObj = {};
+    //        var date = '2005';
+    //        var lastId = results[0].indicator.id;
+    //        results.forEach(function(indicator){
+    //
+    //            if(indicator.indicator.id != lastId){
+    //                compiledIndicators.push(indicatorObj);
+    //                indicatorObj={};
+    //                date = '2005';
+    //            }
+    //
+    //            if(indicator.date > date && indicator.value){
+    //                date = indicator.date;
+    //                indicatorObj.indicator = indicator.indicator.value;
+    //                indicatorObj.value = indicator.value;
+    //                indicatorObj.date = date;
+    //            }
+    //
+    //            lastId = indicator.indicator.id;
+    //            // console.log(indicatorObj);
+    //
+    //
+    //        });
+    //
+    //    });
 
 
 }]);
@@ -666,62 +630,6 @@ app.factory('questionnaire', function () {
 app.factory('countryPage',function(){
     return {};
 });
-
-//app.factory('countryAbbreviations',function(){
-//    return {
-//        getAbbreviation: function(countryName){
-//            var countryNames = [ 'andorra',
-//                'albania',
-//                'armenia',
-//                'austria',
-//                'azerbaijan',
-//                'Bosnia and Herzegovina',
-//                'belgium',
-//                'bulgaria',
-//                'belarus',
-//                'switzerland',
-//                'cyprus',
-//                'czech-republic',
-//                'germany',
-//                'denmark',
-//                'estonia',
-//                'liechtenstein',
-//                'finland',
-//                'spain',
-//                'france',
-//                'great-britain',
-//                'croatia',
-//                'georgia',
-//                'greece',
-//                'hungary',
-//                'ireland',
-//                'iceland',
-//                'italy',
-//                'lithuania',
-//                'luxembourg',
-//                'latvia',
-//                'monaco',
-//                'moldova',
-//                'montenegro',
-//                'macedonia',
-//                'malta',
-//                'netherlands',
-//                'norway',
-//                'poland',
-//                'portugal',
-//                'romania',
-//                'serbia',
-//                'sweden',
-//                'russia',
-//                'slovakia',
-//                'slovenia',
-//                'san-marino',
-//                'ukraine',
-//                'turkey',
-//                'vatican-city' ]
-//        }
-//    }
-//});
 
 app.factory('userRecommendations',function(){
     return {};
