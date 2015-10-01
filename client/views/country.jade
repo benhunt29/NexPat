@@ -1,3 +1,13 @@
+div(layout-margin layout-padding layout-align = "center center")
+   div(layout="row" layout-sm="column" layout-align="center center")
+      h1.md-display-3 {{countryName}}
+md-content(layout-padding layout-margin layout-fill layout-align="center center" layout="column")
+   h1.md-display-2(layout-padding) Recommended Countries
+   md-list
+      md-list-item(ng-repeat="statistic in worldBankData" flex )
+         p {{statistic.indicator}}
+         p {{statistic.year}}
+         p {{statistic.value}}
 
 div Further Resources
    a(ng-href="http://www.nationmaster.com/country-info/profiles/{{countryName}}") {{countryName}}

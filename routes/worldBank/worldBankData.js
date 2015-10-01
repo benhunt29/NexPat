@@ -25,21 +25,21 @@ router.get('/:abbrev', function(req, res, next) {
       data = data[0];
       var compiledIndicators = [];
       var indicatorObj = {};
-      var date = '2005';
+      var year = '2005';
       var lastId = data[0].indicator.id;
       data.forEach(function(indicator){
 
         if(indicator.indicator.id != lastId){
           compiledIndicators.push(indicatorObj);
           indicatorObj={};
-          date = '2005';
+          year = '2005';
         }
 
-        if(indicator.date > date && indicator.value){
-          date = indicator.date;
+        if(indicator.date > year && indicator.value){
+          year = indicator.date;
           indicatorObj.indicator = indicator.indicator.value;
           indicatorObj.value = indicator.value;
-          indicatorObj.date = date;
+          indicatorObj.year = year;
         }
 
         lastId = indicator.indicator.id;
@@ -47,6 +47,7 @@ router.get('/:abbrev', function(req, res, next) {
 
 
       });
+      //console.log(compiledIndicators);
       res.json(compiledIndicators);
     }
 

@@ -136,66 +136,30 @@ app.controller('signUpController',['$location','$scope','$http', function($locat
 
 }]);
 
-app.controller('countryController', ['countryPage','$scope','$http', function(countryPage,$scope,$http){
+app.controller('countryController', ['sharedService','countryPage','$scope','$http', function(sharedService,countryPage,$scope,$http){
     $scope.countryName = countryPage.name;
     $scope.abbreviation = countryPage.abbreviation;
+    $scope.worldBankData = {};
 
-    $http.get('/worldBank/worldBankData/'+$scope.abbreviation)
-        .then(function(response){
-            console.log(response);
-        });
+    var getData = function(){
+        $http.get('/worldBank/worldBankData/'+$scope.abbreviation)
+            .then(function(response){
+                $scope.worldBankData = response.data;
+                //sharedService.worldBankDataUpdate();
+                console.log(response.data);
 
-    //var combinedIndicators = '';
-    //worldBankIndicators.forEach(function(item,index){
-    //        combinedIndicators += item.indicatorCode +';';
-    //    });
-    //
-    //combinedIndicators = combinedIndicators.substring(0,combinedIndicators.length-1);
-    //
-    //var worldBankAPIQuery1 = 'http://api.worldbank.org/country/' + $scope.abbreviation + '/indicator/' + combinedIndicators + '?source=2&per_page=100&date=2006:2015&format=json';
-    //$http(
-    //    {
-    //        url: worldBankAPIQuery1,
-    //        headers:{
-    //            'Access-Control-Allow-Origin': '*',
-    //            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    //            'Access-Control-Allow-Headers': 'Content-Type, X-Requested-With'
-    //            //'X-Random-Shit':'123123123'
-    //        }
-    //    })
-    //    .then(function(results){
-    //       $scope.worldBankInfo = results;
-    //        console.log(results);
-    //
-    //        results.shift();
-    //        results = results[0];
-    //        var compiledIndicators = [];
-    //        var indicatorObj = {};
-    //        var date = '2005';
-    //        var lastId = results[0].indicator.id;
-    //        results.forEach(function(indicator){
-    //
-    //            if(indicator.indicator.id != lastId){
-    //                compiledIndicators.push(indicatorObj);
-    //                indicatorObj={};
-    //                date = '2005';
-    //            }
-    //
-    //            if(indicator.date > date && indicator.value){
-    //                date = indicator.date;
-    //                indicatorObj.indicator = indicator.indicator.value;
-    //                indicatorObj.value = indicator.value;
-    //                indicatorObj.date = date;
-    //            }
-    //
-    //            lastId = indicator.indicator.id;
-    //            // console.log(indicatorObj);
-    //
-    //
-    //        });
-    //
-    //    });
+            },function errorCallback(response){
+                $scope.data = "There was an error, try again later!";
+                console.log(response);
+                //$scope.$apply();
+            });
+    };
 
+    //$scope.$on('update',function(){
+    //    getData();
+    //});
+
+    getData();
 
 }]);
 
@@ -634,3 +598,15 @@ app.factory('countryPage',function(){
 app.factory('userRecommendations',function(){
     return {};
 });
+
+app.factory('sharedService', ['$rootScope',function($rootScope){
+    var mySharedService = {};
+
+    mySharedService.values = {};
+
+    mySharedService.worldBankDataUpdate = function(){
+        $rootScope.$broadcast('update');
+    };
+
+    return mySharedService;
+}]);
