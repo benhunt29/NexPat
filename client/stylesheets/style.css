@@ -11,8 +11,16 @@
 
 #navBar {
     position:relative;
+
 }
 
+.homePageButtons{
+    font-size: 24px;
+}
+
+#toolBar {
+    min-height: 175px;
+}
 #loggedInUser {
     position: absolute;
     top: 0;

@@ -3,6 +3,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var userCountries = require('../../models/userCountries');
 var passport = require('passport');
+var expressJwt = require('express-jwt');
 
 //mongoose.collection.createIndex({"people.languages.text":"text"});
 

@@ -3,7 +3,7 @@ div(layout-margin layout-padding layout-align = "center center" layout="column")
       h1.md-display-4 {{countryName}}
       #flag(ng-style="{'background-image':'url(' + flagUrl + ')'}" alt="")
 
-   md-content(layout-padding layout-margin layout-fill layout-align="center end" layout="row")
+   md-content(layout-padding layout-margin layout-fill layout-align="center start" layout="row")
       md-list
          md-list-item.md-3-line(ng-repeat="statistic in worldBankData.column1" flex )
             .md-list-item-text(layout="column")

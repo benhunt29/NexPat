@@ -3,10 +3,11 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var WorldFactbook = require('../../models/WorldFactbook');
 var countriesList = require('../../modules/countryData');
+var expressJwt = require('express-jwt');
 
 //mongoose.collection.createIndex({"people.languages.text":"text"});
 /* POST users listing. */
-router.post('/', function(req, res, next) {
+router.post('/', expressJwt({secret:process.env.jwtSecret}), function(req, res, next) {
   if (req.body.languageOption){
     var query = req.body.language;
 

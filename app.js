@@ -28,6 +28,8 @@ var JwtStrategy = require('passport-jwt').Strategy;
 var opts = {};
 opts.secretOrKey = process.env.jwtSecret;
 opts.passReqToCallback = true;
+//var expressJwt = require('express-jwt');
+//var jsonwebtoken = require('jsonwebtoken');
 
 var app = express();
 
@@ -62,11 +64,6 @@ mongoose.connection.on('disconnected', function () {
     console.log('Mongoose default connection disconnected');
 });
 
-//mongoose.connection.db.collection('WorldFactbook', function(err,collection){
-//  //console.log(collection);
-//});
-
-// uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', './images/NextPatLogo.png')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -75,20 +72,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(passport.initialize());
-//app.use(flash());
-
-//passport.serializeUser(function (user, done) {
-//    done(null, user.id);
-//});
-//
-//passport.deserializeUser(function (id, done) {
-//    User.findById(id, function (err, user) {
-//        if (err) {
-//            done(err);
-//        }
-//        done(null, user);
-//    });
-//});
 
 passport.serializeUser(function (user, done) {
     done(null, user);
@@ -98,32 +81,32 @@ passport.deserializeUser(function (obj, done) {
     done(null, obj);
 });
 
-passport.use(new JwtStrategy(opts, function (jwt_payload, done) {
-        console.log('Checking user in passport JwtStrategy!', jwt_payload.sub);
-        Users.findOne({username: jwt_payload.sub}, function (err, user) {
-            if (err) {
-                //req.flash('incorrectCredentialsMsg', 'Incorrect username and/or password.');
-                throw err;
-            }
-
-            if (!user) {
-                console.log('nouser');
-                return done(null, false);//, req.flash('incorrectCredentialsMsg', 'Incorrect username and/or password.'));
-            }
-
-            user.comparePassword(password, function (err, isMatch) {
-                if (err) {
-                    throw err;
-                }
-                if (isMatch) {
-                    return done(null, user);
-                } else {
-                    done(null, false);//, req.flash('incorrectCredentialsMsg', 'Incorrect username and/or password.'));
-                }
-            });
-        });
-    })
-);
+//passport.use(new JwtStrategy(opts, function (jwt_payload, done) {
+//        console.log('Checking user in passport JwtStrategy!', jwt_payload.sub);
+//        Users.findOne({username: jwt_payload.sub}, function (err, user) {
+//            if (err) {
+//                //req.flash('incorrectCredentialsMsg', 'Incorrect username and/or password.');
+//                throw err;
+//            }
+//
+//            if (!user) {
+//                console.log('nouser');
+//                return done(null, false);//, req.flash('incorrectCredentialsMsg', 'Incorrect username and/or password.'));
+//            }
+//
+//            user.comparePassword(password, function (err, isMatch) {
+//                if (err) {
+//                    throw err;
+//                }
+//                if (isMatch) {
+//                    return done(null, user);
+//                } else {
+//                    done(null, false);//, req.flash('incorrectCredentialsMsg', 'Incorrect username and/or password.'));
+//                }
+//            });
+//        });
+//    })
+//);
 
 passport.use('local', new LocalStrategy({
         passReqToCallback: true,
@@ -188,24 +171,26 @@ passport.use(new GoogleStrategy({
     }
 ));
 
-passport.use(
-    new BearerStrategy(
-        function(token, done) {
-            User.findOne({ access_token: token },
-                function(err, user) {
-                    if(err) {
-                        return done(err)
-                    }
-                    if(!user) {
-                        return done(null, false)
-                    }
-
-                    return done(null, user, { scope: 'all' })
-                }
-            );
-        }
-    )
-);
+//passport.use(
+//    new BearerStrategy(
+//        function(token, done) {
+//            var decoded = jasonwebtoken.decode(token,process.env.jwtSecret);
+//            console.log(decoded);
+//            Users.findOne({ access_token: token },
+//                function(err, user) {
+//                    if(err) {
+//                        return done(err)
+//                    }
+//                    if(!user) {
+//                        return done(null, false)
+//                    }
+//
+//                    return done(null, user, { scope: 'all' })
+//                }
+//            );
+//        }
+//    )
+//);
 
 app.use('/', index);
 app.use('/api/register', register);
@@ -216,6 +201,7 @@ app.use('/api/logout', logout);
 app.use('/api/questionnaire', questionnaire);
 app.use('/externalAPIs/worldBankData',worldBank);
 app.use('/externalAPIs/mediWiki',mediWiki);
+//app.use('/worldFactbook/*', expressJwt({secret: process.env.jwtSecret}));
 app.use('/*', function (req, res, next) {
     if (req.url.contains('.')) { // exclude files
         next();
@@ -232,6 +218,12 @@ app.use(function (req, res, next) {
 });
 
 // error handlers
+
+app.use(function (err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).send('invalid token...');
+    }
+});
 
 // development error handler
 // will print stacktrace

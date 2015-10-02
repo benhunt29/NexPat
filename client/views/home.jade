@@ -1,11 +1,11 @@
 div(layout = "column" ng-hide="user.username" layout-align = "center center")
     div(layout = "row" layout-align="center end" )
         h1.md-display-3(flex="80") {{question}}
-    div(layout="row" ng-show="showButtons")
-        md-button.md-accent.md-raised(ng-click='getQuestion(true)') Yes
-        md-button.md-accent.md-raised(ng-click='getQuestion(false)') No
+    div(layout="row" ng-show="showButtons" layout-align="space-around end" layout-fill)
+        md-button.homePageButtons.md-accent.md-accent.md-hue-3(ng-click='getQuestion(true)') Yep!
+        md-button.homePageButtons.md-accent.md-accent.md-hue-3(ng-click='getQuestion(false)') Nope!
 //div(ng-show="recommendations") Recommended Countries
-//    div(ng-repeat="country in recommendations")
+//    div(ng-repeat="country in recommendations"3
 //        a(href="/country" ng-click="setCountryPage(country.countryName)") {{country.countryName}}
 
 md-content(layout-padding layout-margin layout-fill layout-align="center center" layout="column" ng-show="recommendations")

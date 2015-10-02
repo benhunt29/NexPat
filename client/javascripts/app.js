@@ -139,19 +139,20 @@ app.controller('signUpController',['$location','$scope','$http', function($locat
 app.controller('countryController', ['sharedService','countryPage','$scope','$http', function(sharedService,countryPage,$scope,$http){
     $scope.countryName = countryPage.name;
     $scope.abbreviation = countryPage.abbreviation;
-    //$scope.worldBankData = {
-    //    column1: {
-    //        indicator: "ARE YOU ",
-    //        year: "READY FOR ",
-    //        value: "SOME DATA?!"
-    //    }
-    //};
+    $scope.worldBankData = {
+        column1: {
+            indicator: "ARE YOU ",
+            year: "READY FOR ",
+            value: "SOME DATA?!"
+        }
+    };
 
     var getData = function(){
         $http.get('/externalAPIs/worldBankData/'+$scope.abbreviation)
             .then(function(response){
-                $scope.worldBankData.column1 = response.data.slice(0,4);
-                $scope.worldBankData.column2 = response.data.slice(0,4);
+                console.log(response.data.length);
+                $scope.worldBankData.column1 = response.data.slice(0,response.data.length/2);
+                $scope.worldBankData.column2 = response.data.slice(response.data.length/2,response.data.length);
 
                 //sharedService.worldBankDataUpdate();
                 console.log(response.data);
@@ -272,6 +273,7 @@ app.controller('questionnaireController',['countryPage','userRecommendations','q
         if(answer){
             $scope.answers.push(answer);
             $scope.data.showAnswers = true;
+            $scope.searchText = '';
         }
     };
 

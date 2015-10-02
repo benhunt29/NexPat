@@ -2,9 +2,11 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Questionnaire = require('../../models/questionnaire');
+var expressJwt = require('express-jwt');
+
 
 //mongoose.collection.createIndex({"people.languages.text":"text"});
-router.get('/:username', function(req, res, next) {
+router.get('/:username', expressJwt({secret:process.env.jwtSecret}), function(req, res, next) {
   var obj = req.params;
 
   Questionnaire.findOne({username: obj.username}, function (err, userQuestionnaire) {
@@ -22,7 +24,7 @@ router.get('/:username', function(req, res, next) {
 });
 
 /* POST users listing. */
-router.post('/', function(req, res, next) {
+router.post('/', expressJwt({secret:process.env.jwtSecret}),function(req, res, next) {
 
   var obj = req.body;
 
@@ -56,7 +58,7 @@ router.post('/', function(req, res, next) {
   })
 });
 
-router.delete('/:username', function(req, res, next) {
+router.delete('/:username', expressJwt({secret:process.env.jwtSecret}), function(req, res, next) {
   var obj = req.params;
 
   Questionnaire.findOneAndRemove({username: obj.username}, function (err) {

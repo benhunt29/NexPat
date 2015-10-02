@@ -3,9 +3,6 @@ var router = express.Router();
 var request = require('request');
 var worldBankIndicators = require('../../models/worldBankIndicators.json');
 
-
-//mongoose.collection.createIndex({"people.languages.text":"text"});
-/* POST users listing. */
 router.get('/:abbrev', function(req, res, next) {
 
   var combinedIndicators = '';
