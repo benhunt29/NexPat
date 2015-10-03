@@ -117,6 +117,9 @@ app.controller('contactController',['$scope', function($scope){
 }]);
 
 app.controller('signUpController',['$location','$scope','$http', function($location,$scope,$http){
+
+    $scope.passwordPattern = new RegExp('^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{1,}$');
+
     $scope.register = function(){
 
         var newUser = {
