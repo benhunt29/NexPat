@@ -118,8 +118,6 @@ app.controller('contactController',['$scope', function($scope){
 
 app.controller('signUpController',['$location','$scope','$http', function($location,$scope,$http){
 
-    $scope.passwordPattern = new RegExp('^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{1,}$');
-
     $scope.register = function(){
 
         var newUser = {
@@ -154,6 +152,7 @@ app.controller('countryController', ['sharedService','countryPage','$scope','$ht
         $http.get('/externalAPIs/worldBankData/'+$scope.abbreviation)
             .then(function(response){
                 console.log(response.data.length);
+                console.log(countryPage);
                 $scope.worldBankData.column1 = response.data.slice(0,response.data.length/2);
                 $scope.worldBankData.column2 = response.data.slice(response.data.length/2,response.data.length);
 
@@ -173,7 +172,7 @@ app.controller('countryController', ['sharedService','countryPage','$scope','$ht
 
     getData();
 
-    var mediWikiCountryName = $scope.countryName.replace(/\s/g,'_');
+    var mediWikiCountryName = encodeURI($scope.countryName);
 
     var getFlag = function(){
         $http.get('/externalAPIs/mediWiki/'+ mediWikiCountryName)

@@ -5,7 +5,6 @@ var userCountries = require('../../models/userCountries');
 var passport = require('passport');
 var expressJwt = require('express-jwt');
 
-//mongoose.collection.createIndex({"people.languages.text":"text"});
 
 router.get('/:username', passport.authenticate('bearer',{session:false}), function(req, res, next) {
   var obj = req.params;
@@ -21,7 +20,6 @@ router.get('/:username', passport.authenticate('bearer',{session:false}), functi
   });
 });
 
-/* POST users listing. */
 router.post('/', function(req, res, next) {
 
   var obj = req.body;

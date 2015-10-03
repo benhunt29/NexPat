@@ -2,7 +2,7 @@
 var countryList = function(searchResults){
     var countries = [];
 
-    function ReturnedCountry(countryName,abbreviation,labor,climate,perCapitaPPP,urbanPopulation,largestCityPop,medianAge,internetUsagePerCapita){
+    function ReturnedCountry(countryName,abbreviation,labor,climate,perCapitaPPP,urbanPopulation,largestCityPop,largestCityName,medianAge,internetUsagePerCapita,majorityLanguage){
         this.countryName = countryName;
         this.abbreviation = abbreviation;
         this.labor = labor;
@@ -10,8 +10,10 @@ var countryList = function(searchResults){
         this.perCapitaPPP = perCapitaPPP;
         this.urbanPopulation = urbanPopulation;
         this.largestCityPop = largestCityPop;
+        this.largestCityName = largestCityName;
         this.medianAge = medianAge;
         this.internetUsagePerCapita = internetUsagePerCapita;
+        this.majorityLanguage = majorityLanguage;
     }
 
     function capitalizeFirstLetter(string) {
@@ -27,6 +29,11 @@ var countryList = function(searchResults){
         var labor = {Agriculture: laborAg, Industry: laborInd, Services: laborSvc};
         var climate = item.geo.climate.text;
         var perCapitaPPP = item.econ.gdp_per_capita_ppp.text;
+        var majorityLanguage = item.people.languages.text;
+
+        if(majorityLanguage){
+            majorityLanguage = majorityLanguage.match(/[^\s)]+/)[0];
+        }
 
         if (perCapitaPPP) {
             perCapitaPPP = parseFloat(perCapitaPPP.match(/([^\s]+)/)[0].replace(/[^\d\.]/g, ''));
@@ -34,7 +41,7 @@ var countryList = function(searchResults){
 
         var largestCityPop = item.people.major_urban_areas_population.text;
         if (largestCityPop) {
-
+            var largestCityName = largestCityPop.match(/[^(capital)\d]+/)[0];
             largestCityPop = parseFloat(largestCityPop.match(/[^\.,s]\d.[^\s]+/)[0].replace(/[^\d\.]/g, ''));
             if(largestCityPop%1 != 0){
                 largestCityPop *= 1000000;
@@ -44,7 +51,7 @@ var countryList = function(searchResults){
         var urbanPopulation = parseFloat(item.people.urbanization.urban_population);
         var medianAge = parseFloat(item.people.median_age.total);
         var internetUsagePerCapita = 100*parseFloat(item.comm.internet_users.text) / parseFloat(item.people.population.text);
-        var country = new ReturnedCountry(countryName,abbreviation,labor,climate,perCapitaPPP,urbanPopulation,largestCityPop,medianAge,internetUsagePerCapita);
+        var country = new ReturnedCountry(countryName,abbreviation,labor,climate,perCapitaPPP,urbanPopulation,largestCityPop,largestCityName,medianAge,internetUsagePerCapita,majorityLanguage);
         countries.push(country);
     });
 
