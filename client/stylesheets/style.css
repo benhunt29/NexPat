@@ -36,13 +36,8 @@
 }
 
 #flag{
-    background-size: 220px;
-    height: 132px;
-    width: 220px;
-    margin:auto;
-    background-repeat: no-repeat;
+    max-width: 100%;
+    height: auto;
 }
 
-.columns {
-    columns: 3;
-}
+

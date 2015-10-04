@@ -26,13 +26,13 @@ router.get('/:abbrev', function(req, res, next) {
       var lastId = data[0].indicator.id;
       data.forEach(function(indicator){
 
-        if(indicator.indicator.id != lastId){
+        if(indicator.indicator.id != lastId && Object.keys(indicatorObj).length !=0){
           compiledIndicators.push(indicatorObj);
           indicatorObj={};
           year = '2005';
         }
 
-        if(indicator.date > year && indicator.value){
+        if(indicator.date > year && indicator.value && indicator.value !=0){
           year = indicator.date;
           indicatorObj.indicator = indicator.indicator.value;
           indicatorObj.value = indicator.value;

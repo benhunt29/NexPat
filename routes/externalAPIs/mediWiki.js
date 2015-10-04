@@ -5,10 +5,6 @@ var request = require('request');
 
 router.get('/:country', function(req, res, next) {
 
-    //var flagImageName = mediWikiRequests.parseRequest(req.params.country);
-    //var flagImageUrl = mediWikiRequests.imageRequest(flagImageName);
-    //console.log(flagImageUrl);
-    //res.sendStatus(200);
     var countryName = req.params.country;
 
     var mediWikiParseQuery = 'https://en.wikipedia.org/w/api.php/w/api.php?action=parse&format=json&page=' + encodeURI(countryName) + '&prop=images';
@@ -21,22 +17,32 @@ router.get('/:country', function(req, res, next) {
             var flagImageName ='';
             var countrySearchName = countryName.replace(/[\s]/g, '_');
             var matchRegExp ='Flag_of.*'+countrySearchName;
-            images.forEach(function(image){
-                isFlagImage = image.match(matchRegExp);
+            var i = 0;
+            while(!isFlagImage){
+                isFlagImage = images[i].match(matchRegExp);
                 if(isFlagImage){
-                    flagImageName = image;
+                    flagImageName = images[i];
 
                     var mediWikiImageQuery = 'https://en.wikipedia.org/w/api.php/w/api.php?action=query&prop=imageinfo&format=json&iiprop=url&iiurlwidth=220&titles=File%3A' + flagImageName;
 
                     request(mediWikiImageQuery, function (err, response, body) {
                         if (!err && response.statusCode == 200) {
                             var data = JSON.parse(body);
-                            res.json(data.query.pages['-1'].imageinfo[0].thumburl);
+
+                            if(data.query.pages){
+                                var keys = Object.keys(data.query.pages);
+                                res.json(data.query.pages[keys[0]].imageinfo[0].thumburl);
+                            } else{
+                                res.json('');
+                            }// ['name', 'value']
+
+                            //res.json(data.query.pages['-1'].imageinfo[0].thumburl);
                         }
                     });
 
                 }
-            });
+                i++;
+            }
 
         }
 

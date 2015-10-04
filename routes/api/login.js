@@ -22,7 +22,8 @@ router.post('/', function(req, res, next) {
     passport.authenticate('local', {session:false},function(err, user, info) {
         if (err) { return next(err) }
         if (!user) {
-            return res.json(401, { error: 'message' });
+
+            return res.json(401, { error: 'Incorrect username and/or password!' });
         }
 
         //user has authenticated correctly thus we create a JWT token

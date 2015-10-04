@@ -1,7 +1,7 @@
 div(layout-margin layout-padding layout-align = "center center" layout="column")
-   div(layout="row" layout-sm="row" layout-align="space-between center" flex layout-fill)
+   #countryHeader(layout="row" layout-sm="row" layout-align="space-around center" flex layout-fill)
       h1.md-display-4 {{countryName}}
-      #flag(ng-style="{'background-image':'url(' + flagUrl + ')'}" alt="")
+      img#flag(ng-src="{{flagUrl}}" alt="")
 
    md-content(layout-padding layout-margin layout-fill layout-align="center start" layout="row")
       md-list

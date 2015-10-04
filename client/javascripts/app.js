@@ -140,13 +140,7 @@ app.controller('signUpController',['$location','$scope','$http', function($locat
 app.controller('countryController', ['sharedService','countryPage','$scope','$http', function(sharedService,countryPage,$scope,$http){
     $scope.countryName = countryPage.name;
     $scope.abbreviation = countryPage.abbreviation;
-    $scope.worldBankData = {
-        column1: {
-            indicator: "ARE YOU ",
-            year: "READY FOR ",
-            value: "SOME DATA?!"
-        }
-    };
+    $scope.worldBankData = {};
 
     var getData = function(){
         $http.get('/externalAPIs/worldBankData/'+$scope.abbreviation)
@@ -192,7 +186,7 @@ app.controller('countryController', ['sharedService','countryPage','$scope','$ht
 
 }]);
 
-app.controller('loginController', ['$scope', '$http', 'authService', '$location', '$rootScope', function($scope, $http, authService, $location, $rootScope){
+app.controller('loginController', ['$mdToast','$scope', '$http', 'authService', '$location', '$rootScope', function($mdToast,$scope, $http, authService, $location, $rootScope){
     $scope.signIn = function(){
         var user = {
             username: $scope.form.userName,
@@ -204,7 +198,18 @@ app.controller('loginController', ['$scope', '$http', 'authService', '$location'
                 authService.saveToken(response.data);
                 $rootScope.user = authService.getUser();
                 $location.path("/");
+            }, function errorCallback(response) {
+                console.log(response);
+                $scope.errorToast(response.data.error);
             });
+    };
+
+    $scope.errorToast = function(message) {
+        $mdToast.show(
+            $mdToast.simple()
+                .content(message)
+                .hideDelay(3000)
+        );
     };
 
 }]);
