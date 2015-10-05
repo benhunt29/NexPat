@@ -15,14 +15,14 @@ block content
                     div(layout="column" layout-align= "end start")
                         h2#subtitle.md-headline() A Wanderer's Friend
                     span(flex)
-                    h1#loggedInUser.md-subhead(ng-show="user.username") {{user.username}}
+                    h1#loggedInUser.md-subhead(ng-show="user.username") Hello, {{user.username}}!
                 //span(flex) SPAN
                 //div(layout="row" )
                 div(layout="row" flex layout-align="space-around center" layout-align-md="start center" layout-wrap)
                     a(href="/")
                         .md-button(flex) Home
                     a(href="/questionnaire")
-                        .md-button(flex) Questionnaire
+                        .md-button(flex) Match Me
                     a(href="/about")
                         .md-button(flex) About
                     a(href="/help")

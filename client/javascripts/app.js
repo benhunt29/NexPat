@@ -56,19 +56,12 @@ app.config(['$httpProvider','$routeProvider','$locationProvider','$mdThemingProv
 app.controller('homeController', ['authService','countryPage','questionnaire','userRecommendations','$http','$rootScope','$scope','$location', function(authService,countryPage,questionnaire,userRecommendations,$http,$rootScope,$scope,$location){
 
     $rootScope.user = authService.getUser();
-
     if($rootScope.user && $rootScope.user.username){
-        if(!$scope.recommendations){
-            if (userRecommendations.countries){
-                $scope.recommendations = userRecommendations.countries;
-            } else {
                 $http.get('/api/questionnaire/'+$rootScope.user.username).
                     then(function(userAnswers){
-                        console.log($rootScope.user.username);
                         if(typeof userAnswers.data == 'object'){
                             $http.post('/api/worldFactbook',{languageOption:true,language:userAnswers.data.question1}).
                                 then(function(countriesToSearch){
-                                    console.log(userAnswers,countriesToSearch);
                                     $scope.recommendations = questionnaire.determineRecommendations(userAnswers.data,countriesToSearch.data);
                                     userRecommendations.countries = $scope.recommendations;
                                 });
@@ -76,8 +69,8 @@ app.controller('homeController', ['authService','countryPage','questionnaire','u
                             $location.path('/questionnaire');
                         }
                     });
-            }
-        }
+
+
     } else{
             var introQuestions = [{question: "Have you been here before?", route:'login'},
                 {question: "Would you like to sign up?", route: 'signUp'},
@@ -100,11 +93,19 @@ app.controller('homeController', ['authService','countryPage','questionnaire','u
             };
         }
 
-    $scope.setCountryPage = function(countryName,abbreviation){
+    $scope.setCountryPage = function(country){
 
-        countryPage.name = countryName;
-        countryPage.abbreviation = abbreviation;
+        countryPage.name = country.countryName;
+        countryPage.abbreviation = country.abbreviation;
+        countryPage.largestCityName = country.largestCityName ? country.largestCityName : "No Information";
+        countryPage.largestCityPop = country.largestCityPop ? country.largestCityPop : "No Information";
+        countryPage.majorityLanguage = country.majorityLanguage;
+        countryPage.medianAge = country.medianAge;
+        //countryPage = country;
+
         $location.path('/country');
+
+
     };
 
 }]);
@@ -113,7 +114,6 @@ app.controller('aboutController', ['$scope',function($scope){
 }]);
 
 app.controller('contactController',['$scope', function($scope){
-    $scope.message = "I'm a page that tells you how to yell (by writing an all-caps email) at the developer!";
 }]);
 
 app.controller('signUpController',['$location','$scope','$http', function($location,$scope,$http){
@@ -130,7 +130,6 @@ app.controller('signUpController',['$location','$scope','$http', function($locat
         };
         $http.post('/api/register',newUser)
             .then(function(response){
-                console.log(response);
                 $location.path('/login');
             });
     }
@@ -140,29 +139,22 @@ app.controller('signUpController',['$location','$scope','$http', function($locat
 app.controller('countryController', ['sharedService','countryPage','$scope','$http', function(sharedService,countryPage,$scope,$http){
     $scope.countryName = countryPage.name;
     $scope.abbreviation = countryPage.abbreviation;
+    $scope.largestCityName = countryPage.largestCityName;
+    $scope.largestCityPop = countryPage.largestCityPop;
+    $scope.majorityLanguage = countryPage.majorityLanguage;
+    $scope.medianAge = countryPage.medianAge;
     $scope.worldBankData = {};
 
     var getData = function(){
         $http.get('/externalAPIs/worldBankData/'+$scope.abbreviation)
             .then(function(response){
-                console.log(response.data.length);
-                console.log(countryPage);
                 $scope.worldBankData.column1 = response.data.slice(0,response.data.length/2);
                 $scope.worldBankData.column2 = response.data.slice(response.data.length/2,response.data.length);
 
-                //sharedService.worldBankDataUpdate();
-                console.log(response.data);
-
             },function errorCallback(response){
                 $scope.data = "There was an error, try again later!";
-                console.log(response);
-                //$scope.$apply();
             });
     };
-
-    //$scope.$on('update',function(){
-    //    getData();
-    //});
 
     getData();
 
@@ -172,13 +164,9 @@ app.controller('countryController', ['sharedService','countryPage','$scope','$ht
         $http.get('/externalAPIs/mediWiki/'+ mediWikiCountryName)
             .then(function(response){
                 $scope.flagUrl = response.data;
-                //sharedService.worldBankDataUpdate();
-                console.log($scope.flagUrl);
 
             },function errorCallback(response){
                 $scope.data = "There was an error, try again later!";
-                console.log(response);
-                //$scope.$apply();
             });
     };
 
@@ -199,7 +187,6 @@ app.controller('loginController', ['$mdToast','$scope', '$http', 'authService', 
                 $rootScope.user = authService.getUser();
                 $location.path("/");
             }, function errorCallback(response) {
-                console.log(response);
                 $scope.errorToast(response.data.error);
             });
     };
@@ -214,7 +201,7 @@ app.controller('loginController', ['$mdToast','$scope', '$http', 'authService', 
 
 }]);
 
-app.controller('navCtrl', ['authService','$scope','$rootScope','$location','$http', function(authService, $scope,$rootScope, $location,$http){
+app.controller('navCtrl', ['userRecommendations','authService','$scope','$rootScope','$location','$http', function(userRecommendations,authService, $scope,$rootScope, $location,$http){
     $rootScope.user = authService.getUser();
 
     if($rootScope.user && $rootScope.user.username){
@@ -222,13 +209,12 @@ app.controller('navCtrl', ['authService','$scope','$rootScope','$location','$htt
     }
 
     $scope.logout = function(){
-        $http.get('/api/questionnaire/'+$rootScope.user.username);
         $http.get('/api/logout').
             then(function(response){
-                console.log(response);
             });
         authService.logout();
         $rootScope.user = authService.getUser();
+        userRecommendations = {};
         $location.path("/home");
     }
 }]);
@@ -237,10 +223,10 @@ app.controller('helpController',['$scope', function($scope){
     $scope.message = "I'm a help page that currently doesn't help at all";
 }]);
 
-app.controller('questionnaireController',['countryPage','userRecommendations','questionnaire','$rootScope','$scope','$location', '$http','$log','$q',function(countryPage,userRecommendations,questionnaire,$rootScope,$scope,$location,$http,$log,$q){
+app.controller('questionnaireController',['countryPage','userRecommendations','questionnaire','$rootScope','$scope','$location', '$http',function(countryPage,userRecommendations,questionnaire,$rootScope,$scope,$location,$http){
 
     if(!$rootScope.user.username){
-        $location.path('/login');
+        $location.path('/');
     }
 
     var questions = questionnaire.questions;
@@ -254,8 +240,6 @@ app.controller('questionnaireController',['countryPage','userRecommendations','q
 
 
     $scope.querySearch = function(query) {
-        //console.log(query);
-        //console.log($scope.list);
         return query ? $scope.list.filter( createFilterFor(query) ) : $scope.list;
     };
 
@@ -283,22 +267,22 @@ app.controller('questionnaireController',['countryPage','userRecommendations','q
             $scope.searchText = '';
         }
     };
+    if($rootScope.user.username){
+        $http.get('/api/questionnaire/'+$rootScope.user.username).
+            then(function(userAnswers){
+                if(typeof userAnswers.data == 'object'){
+                    $http.post('/api/worldFactbook',{languageOption:true,language:userAnswers.data.question1}).
+                        then(function(countriesToSearch){
+                            $scope.recommendations = questionnaire.determineRecommendations(userAnswers.data,countriesToSearch.data);
+                            userRecommendations.countries = $scope.recommendations;
+                        });
+                }else{
+                    $scope.getQuestion();
+                    $scope.list = loadAll();
+                }
+            });
+    }
 
-    $http.get('/api/questionnaire/'+$rootScope.user.username).
-        then(function(userAnswers){
-            console.log($rootScope.user.username);
-            if(typeof userAnswers.data == 'object'){
-                $http.post('/api/worldFactbook',{languageOption:true,language:userAnswers.data.question1}).
-                    then(function(countriesToSearch){
-                        console.log(userAnswers,countriesToSearch);
-                        $scope.recommendations = questionnaire.determineRecommendations(userAnswers.data,countriesToSearch.data);
-                        userRecommendations.countries = $scope.recommendations;
-                });
-            }else{
-                $scope.getQuestion();
-                $scope.list = loadAll();
-            }
-        });
 
     $scope.getQuestion = function(){
         $scope.data.showAnswers = false;
@@ -318,7 +302,6 @@ app.controller('questionnaireController',['countryPage','userRecommendations','q
         }else{
             $scope.question = questions[$scope.questionNum].question;
             $scope.type = questions[$scope.questionNum].type;
-            console.log($scope.question, $scope.type);
             if($scope.type == 'list'){
                 $scope.list = questions[$scope.questionNum].answerOptions;
             }
@@ -347,14 +330,9 @@ app.controller('questionnaireController',['countryPage','userRecommendations','q
             })
     };
 
-    $scope.setCountryPage = function(countryName){
-        countryPage.name = countryName;
-    };
-
     $scope.deleteQuestionnaire = function(){
         $http.delete('api/questionnaire/'+$rootScope.user.username)
             .then(function(response){
-                console.log('deleted!');
                 userRecommendations = {};
                 $scope.recommendations = false;
                 $scope.questionNum = 0;
@@ -378,7 +356,6 @@ app.service('authService', ['$window', function ($window) {
 
     this.saveToken = function (token) {
         $window.localStorage.jwtToken = token;
-        console.log('Saved token:',$window.localStorage.jwtToken);
     };
 
     this.getToken = function () {
@@ -403,7 +380,6 @@ app.service('authService', ['$window', function ($window) {
         delete $window.localStorage.jwtToken;
     };
 
-    // expose user as an object
     this.getUser = function () {
         return this.parseJwt(this.getToken())
     };
@@ -413,7 +389,6 @@ app.factory('authInterceptor', ['$q', '$location', 'authService', function ($q, 
     return {
         request: function (config) {
             config.headers = config.headers || {};
-            console.log(config.url);
             if (authService.isAuthed()) {
                 config.headers.Authorization = 'Bearer ' + authService.getToken();
             }
@@ -437,7 +412,6 @@ app.factory('authInterceptor', ['$q', '$location', 'authService', function ($q, 
                 $location.path("/login");
 
             } else {
-                console.log(response);
             }
             return $q.reject(response);
         }

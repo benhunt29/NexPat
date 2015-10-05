@@ -1,33 +1,47 @@
 div(layout-margin layout-padding layout-align = "center center" layout="column")
    #countryHeader(layout="row" layout-sm="row" layout-align="space-around center" flex layout-fill)
-      h1.md-display-4 {{countryName}}
+      div(layout = "column" layout-align="space-around center")
+         h1#countryPageCountryName.md-display-4 {{countryName}}
+         md-content(layout-margin layout-fill layout-align="center start" layout="row")
+            md-list
+               md-list-item.md-3-line(flex)
+                  .md-list-item-text(layout="column" layout-fill)
+                     div(layout="row" layout-align="space-between center")
+                        h4 Largest City: {{largestCityName}} (Pop.: {{largestCityPop}})
+                     div(layout="row" layout-align="start center")
+                        h4 Majority Language: {{majorityLanguage}}
+                     div(layout="row" layout-align="start center")
+                        h4 Median Age: {{medianAge}}
       img#flag(ng-src="{{flagUrl}}" alt="")
 
-   md-content(layout-padding layout-margin layout-fill layout-align="center start" layout="row")
-      md-list
-         md-list-item.md-3-line(ng-repeat="statistic in worldBankData.column1" flex )
-            .md-list-item-text(layout="column")
-               h3 {{statistic.indicator}}
-               h4 Year: {{statistic.year}}
-               p Value: {{statistic.value}}
-      md-list
-         md-list-item.md-3-line(ng-repeat="statistic in worldBankData.column2" flex )
-            .md-list-item-text(layout="column")
-               h3 {{statistic.indicator}}
-               h4 Year: {{statistic.year}}
-               p Value: {{statistic.value}}
+
+   div(layout = "column")
+      h2#worldBankDataTitle World Bank Data
+      md-content(layout-padding layout-margin layout-fill layout-align="center start" layout="row")
+         md-list
+            md-list-item.md-3-line(ng-repeat="statistic in worldBankData.column1" flex )
+               .md-list-item-text(layout="column")
+                  h3 {{statistic.indicator}}
+                  h4 Year: {{statistic.year}}
+                  p Value: {{statistic.value}}
+         md-list
+            md-list-item.md-3-line(ng-repeat="statistic in worldBankData.column2" flex )
+               .md-list-item-text(layout="column")
+                  h3 {{statistic.indicator}}
+                  h4 Year: {{statistic.year}}
+                  p Value: {{statistic.value}}
 
 div(layout="row")
-   a(ng-href="http://www.nationmaster.com/country-info/profiles/{{countryName}}")
+   a(ng-href="http://www.nationmaster.com/country-info/profiles/{{countryName}}" target="_blank")
       md-button.md-primary.md-raised.md-hue-1(flex) NationMaster
-   a(href="http://www.transitionsabroad.com/")
+   a(href="http://www.transitionsabroad.com/" target="_blank")
       md-button.md-primary.md-raised.md-hue-1(flex) Transitions Abroad
-   a(href="http://internationalliving.com/")
+   a(href="http://internationalliving.com/" target="_blank")
       md-button.md-primary.md-raised.md-hue-1(flex) International Living
-   a(href="http://www.expatinfodesk.com/")
+   a(href="http://www.expatinfodesk.com/" target="_blank")
       md-button.md-primary.md-raised.md-hue-1(flex) Expat Info Desk
-   a(href="http://www.numbeo.com/cost-of-living/")
+   a(href="http://www.numbeo.com/cost-of-living/" target="_blank")
       md-button.md-primary.md-raised.md-hue-1(flex) Cost of Living List
-   a(href="http://www.numbeo.com/quality-of-life/rankings_by_country.jsp?title=2015-mid&region=150")
+   a(href="http://www.numbeo.com/quality-of-life/rankings_by_country.jsp?title=2015-mid&region=150" target="_blank")
       md-button.md-primary.md-raised.md-hue-1(flex) Quality of Life
 

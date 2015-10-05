@@ -155,8 +155,8 @@ passport.use(new GoogleStrategy({
             if (user) {
                 return done(err, user);
             } else {
-                var googleUser = new Users(googleUser);
-                googleUser.save(function (err, user) {
+                var newGoogleUser = new Users(googleUser);
+                newGoogleUser.save(function (err, user) {
                     //if(err) {
                     //    res.json(401, { error: 'message' });
                     //}else {

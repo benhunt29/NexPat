@@ -9,11 +9,11 @@ div(layout = "column" ng-hide="user.username" layout-align = "center center")
 //        a(href="/country" ng-click="setCountryPage(country.countryName)") {{country.countryName}}
 
 md-content(layout-padding layout-margin layout-fill layout-align="center center" layout="column" ng-show="recommendations")
-    h1.md-display-2(layout-padding) Recommended Countries
+    h1.md-display-2(layout-padding) Matched Countries
     md-list
         md-list-item(ng-repeat="country in recommendations" flex )
             //.md-list-item-text Agriculture: farming, fishing, and forestry
-            .md-button.md-primary(flex ng-click="setCountryPage(country.countryName,country.abbreviation)" name="country.countryName") {{country.countryName}}
+            .md-button.md-primary(flex ng-click="setCountryPage(country)" name="country.countryName") {{country.countryName}}
         //md-list-item
         //    .md-list-item-text Industry: mining, manufacturing, energy production, and construction
         //md-list-item

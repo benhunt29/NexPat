@@ -19,6 +19,10 @@ var countryList = function(searchResults){
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
+    //
+    //function capitalizeFirstLetterOnly(string) {
+    //    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    //}
 
     searchResults.forEach(function(item,index) {
         var countryName = capitalizeFirstLetter(item.name.name);
@@ -41,7 +45,8 @@ var countryList = function(searchResults){
 
         var largestCityPop = item.people.major_urban_areas_population.text;
         if (largestCityPop) {
-            var largestCityName = largestCityPop.match(/[^(capital)\d]+/)[0];
+            var largestCityName = largestCityPop.match(/[^\s]+/)[0];
+            largestCityName = capitalizeFirstLetter(largestCityName.toLowerCase());
             largestCityPop = parseFloat(largestCityPop.match(/[^\.,s]\d.[^\s]+/)[0].replace(/[^\d\.]/g, ''));
             if(largestCityPop%1 != 0){
                 largestCityPop *= 1000000;

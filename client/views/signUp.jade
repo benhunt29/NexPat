@@ -36,3 +36,5 @@ div(layout-margin layout-padding layout-align = "center center")
             div(layout="row" layout-sm="column" layout-align="center center")
                 input.md-button.md-primary.md-raised(type="submit" layout-fill value="Register" ng-disabled="signUp.$invalid")
             div(ng-show="error") {{error}}
+a(href="/api/login/auth/google" target="_self")
+    #googleSignIn

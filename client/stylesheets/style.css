@@ -40,4 +40,8 @@
     height: auto;
 }
 
+#countryPageCountryName, #worldBankDataTitle {
+    margin:0;
+}
+
 
