@@ -7,7 +7,15 @@ router.get('/:country', function(req, res, next) {
 
     var countryName = req.params.country;
 
-    var mediWikiParseQuery = 'https://en.wikipedia.org/w/api.php/w/api.php?action=parse&format=json&page=' + encodeURI(countryName) + '&prop=images';
+    if (countryName == "Ireland"){
+        var altCountryName = "Republic of " + countryName;
+    }
+
+
+
+    var mediWikiParseQuery = 'https://en.wikipedia.org/w/api.php/w/api.php?action=parse&format=json&page=' + encodeURI(altCountryName || countryName) + '&prop=images';
+
+    console.log(mediWikiParseQuery);
 
     request(mediWikiParseQuery, function (err, response, body) {
         if (!err && response.statusCode == 200) {
@@ -18,7 +26,7 @@ router.get('/:country', function(req, res, next) {
             var countrySearchName = countryName.replace(/[\s]/g, '_');
             var matchRegExp ='Flag_of.*'+countrySearchName;
             var i = 0;
-            while(!isFlagImage){
+            while(!isFlagImage && i != images.length - 1 ){
                 isFlagImage = images[i].match(matchRegExp);
                 if(isFlagImage){
                     flagImageName = images[i];
