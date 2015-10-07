@@ -41,7 +41,7 @@ app.set('view engine', 'jade');
 var mongoose = require('mongoose');
 
 // Build the connection string
-var dbURI = 'mongodb://localhost:27017/NextPat';
+var dbURI = process.env.MONGOLAB_URI || 'mongodb://localhost:27017/NextPat';
 
 // Create the database connection
 mongoose.connect(dbURI);
