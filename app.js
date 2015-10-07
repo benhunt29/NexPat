@@ -24,6 +24,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 var GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+var GOOGLE_OAUTH_CALLBACK = process.env.GOOGLE_OAUTH_CALLBACK;
 var JwtStrategy = require('passport-jwt').Strategy;
 var opts = {};
 opts.secretOrKey = process.env.jwtSecret;
