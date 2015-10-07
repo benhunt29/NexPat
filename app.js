@@ -140,7 +140,7 @@ passport.use('local', new LocalStrategy({
 passport.use(new GoogleStrategy({
         clientID: GOOGLE_CLIENT_ID,
         clientSecret: GOOGLE_CLIENT_SECRET,
-        callbackURL: "http://127.0.0.1:3000/api/login/auth/google/callback"
+        callbackURL: GOOGLE_OATH_CALLBACK || "http://127.0.0.1:3000/api/login/auth/google/callback"
     },
     function (accessToken, refreshToken, profile, done) {
         googleUser = {
