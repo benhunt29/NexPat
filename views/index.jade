@@ -20,19 +20,19 @@ block content
                 //div(layout="row" )
                 div(layout="row" flex layout-align="space-around center" layout-align-md="start center" layout-wrap)
                     a(href="/")
-                        .md-button(flex) Home
+                        md-button(flex) Home
                     a(href="/questionnaire")
-                        .md-button(flex) Match Me
+                        md-button(flex) Match Me
                     a(href="/about")
-                        .md-button(flex) About
+                        md-button(flex) About
                     a(href="/help")
-                        .md-button(flex) Help
+                        md-button(flex) Help
                     //a(href="/signUp" ng-hide="user.username")
                     //    .md-button(flex) Sign up
                     //a(href="/login" ng-hide="user.username")
                     //    .md-button(flex) Sign in
                     a(ng-click="logout()" ng-show="user.username")
-                        .md-button(flex) Sign out
+                        md-button(flex) Sign out
         //span(flex="30")
         span(flex)
         #main(layout="column" layout-align="center center" layout-padding)

@@ -25,14 +25,28 @@ router.post('/', function(req, res, next) {
     res.status(400).send("Email Required.");
   }
 
-  var user = new Users(req.body);
-  user.save(function(err,post){
-    if(err) {
+  Users.findOne({ $or:[ {'username':req.body.username}, {'email':req.body.email} ]},function(err,user){
+    if (err){
       next(err);
-    }else {
-      res.status(200).redirect('/');
+    } else if (user){
+      if (user.username == req.body.username){
+        res.json(409,{error: "That username is taken!"});
+
+      } else if(user.email == req.body.email){
+        res.json(409,{error: "That email has already been registered!"});
+      }
+    } else{
+      var newUser = new Users(req.body);
+      newUser.save(function(err,post){
+        if(err) {
+          next(err);
+        }else {
+          res.status(200).redirect('/');
+        }
+      });
     }
-  })
+  });
+
 });
 
 module.exports = router;

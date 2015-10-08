@@ -116,7 +116,7 @@ app.controller('aboutController', ['$scope',function($scope){
 app.controller('contactController',['$scope', function($scope){
 }]);
 
-app.controller('signUpController',['$location','$scope','$http', function($location,$scope,$http){
+app.controller('signUpController',['$mdToast','$location','$scope','$http', function($mdToast,$location,$scope,$http){
 
     $scope.register = function(){
 
@@ -131,8 +131,18 @@ app.controller('signUpController',['$location','$scope','$http', function($locat
         $http.post('/api/register',newUser)
             .then(function(response){
                 $location.path('/login');
+            }, function errorCallback(response) {
+                $scope.errorToast(response.data.error);
             });
-    }
+    };
+
+    $scope.errorToast = function(message) {
+        $mdToast.show(
+            $mdToast.simple()
+                .content(message)
+                .hideDelay(3000)
+        );
+    };
 
 }]);
 
