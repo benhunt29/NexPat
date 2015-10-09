@@ -22,6 +22,7 @@
     "express-flash": "0.0.2",
     "express-jwt": "^3.1.0",
     "express-session": "^1.11.3",
+    "express-validator": "^2.17.1",
     "gulp-concat": "^2.6.0",
     "gulp-jade": "^1.1.0",
     "gulp-minify-css": "^1.2.1",

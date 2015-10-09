@@ -11,15 +11,15 @@ div(layout-margin layout-padding layout-align = "center center")
                     div(ng-message="required")
                 md-input-container(flex)
                     label Username
-                    input(type="text" name="username" ng-model="form.userName" required)
+                    input(type="text" name="username" ng-model="form.userName" required ng-minlength="4")
                     div(ng-messages="signUp.username.$error")
-                        div(ng-message="minlength") Required!
+                        div(ng-message="minlength") Must be >3 characters!
             div(layout="row" layout-sm="column" layout-align="center center")
                 md-input-container
                     label Password
                     input(type="password" name="password" ng-model="form.password" required ng-minlength="8" ng-pattern = '/(?=.*[!@#$%^&*])(?=.*[0-9])/')
                     div(ng-messages="signUp.password.$error" style="color:maroon" role="alert")
-                        div(ng-message="minlength") Must be >8 characters
+                        div(ng-message="minlength") Must be >7 characters
                         div(ng-message="pattern") Must contain at least 1 number and 1 special character
                 md-input-container
                     label Confirm Password

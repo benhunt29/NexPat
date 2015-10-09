@@ -25,13 +25,8 @@ div(layout = "column" layout-align = "center center" ng-hide="recommendations")
             md-chip-template
                 span {{$chip}}
         md-button.md-accent.md-raised(ng-show="data.showAnswers" ng-click="logAnswer(answers);getQuestion()") Submit
-        //div(layout="row" ng-show="type === 'list' && questionNum > 0")
         div(layout="row" layout-align="space-between center" flex ng-show="type === 'list' && questionNum > 0")
             md-input-container(ng-repeat="item in list")
                 input.md-primary.md-raised(type ="button" ng-model="data.answer" value = "{{item}}" ng-click="logAnswer(item);getQuestion()" aria-label="nolabel" class="md-button md-raised md-primary")
 md-button.md-accent.md-raised(ng-show="recommendations" ng-click="deleteQuestionnaire()") Retake the Questionnaire
-
-//div(ng-show="recommendations[0].countryName") Top Recommended Countries
-//    div(ng-repeat="country in recommendations")
-//        a(href="/country" ng-click="setCountryPage(country.countryName)") {{country.countryName}}
 
