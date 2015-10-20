@@ -1,7 +1,7 @@
 # NextPat
 
 ## Description ##
-Next Pat is an application designed to aide those interested in moving abroad. Users are matched to countries based on their responses to a questionnaire. Currently the application is limited to Europe.
+Next Pat is an application designed to aid those interested in moving abroad. Users are matched to countries based on their responses to a questionnaire. Currently the application is limited to Europe.
 
 ## Data ##
 The recommendation questions are designed to correspond to relevant data sourced from the [CIA World Factbook](https://github.com/factbook/factbook.json). The country list is first filtered by language (matches are countries with a given language listed in their CIA World Factbook language listing). The remaining questions are used to generate a match score. The top 5 (or less) countries with the highest match score are returned. Mongo databases are used to store data.
