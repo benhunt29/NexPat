@@ -20,7 +20,7 @@ div(layout-margin layout-padding layout-align = "center center")
                     input(type="password" name="password" ng-model="form.password" required ng-minlength="8" ng-pattern = '/(?=.*[!@#$%^&*])(?=.*[0-9])/')
                     div(ng-messages="signUp.password.$error" style="color:maroon" role="alert")
                         div(ng-message="minlength") Must be >7 characters
-                        div(ng-message="pattern") Must contain at least 1 number and 1 special character
+                        div(ng-message="pattern") Must contain a number and a special character
                 md-input-container
                     label Confirm Password
                     input(type="password" name="passwordConfirm" ng-model="form.passwordConfirm" required data-match="signUp.password")

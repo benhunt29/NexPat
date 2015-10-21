@@ -8,6 +8,14 @@ var minifyCss = require('gulp-minify-css');
 var merge = require('merge-stream');
 var jade = require('gulp-jade');
 
+var config = {
+    paths: {
+        public: './public/javascripts',
+        js: ['./client/javascripts/main.js','./client/javascripts/**/*.js'],
+        css: './public/stylesheets/'
+    }
+};
+
 // create a default task and just log a message
 gulp.task('default', ['copy', 'build-js', 'build-css','jade-templates'], function () {
     gutil.log('Gulp ran.');
@@ -20,9 +28,6 @@ gulp.task('copy', function () {
     var angularAnimate = gulp.src('node_modules/angular-animate/angular-animate.min.js',{base: 'node_modules'}).pipe(gulp.dest('./public/vendors/'));
     var angularAria = gulp.src('node_modules/angular-aria/angular-aria.min.js',{base: 'node_modules'}).pipe(gulp.dest('./public/vendors/'));
     var angularRoute = gulp.src('node_modules/angular-route/angular-route.min.js',{base: 'node_modules'}).pipe(gulp.dest('./public/vendors/'));
-
-    //var bootstrap = gulp.src('node_modules/bootstrap/dist/css/bootstrap.min.css',{base:'node_modules'}).pipe(gulp.dest('./public/vendors/'));
-
     var angularMaterialCSS = gulp.src('node_modules/angular-material/angular-material.min.css',{base:'node_modules'}).pipe(gulp.dest('./public/stylesheets/'));
 
     var angularMessages = gulp.src('node_modules/angular-messages/angular-messages.min.js',{base:'node_modules'}).pipe(gulp.dest('./public/vendors/'));
@@ -34,7 +39,7 @@ gulp.task('copy', function () {
 
 
 gulp.task('build-js', function () {
-    return gulp.src('client/javascripts/**/*.js')
+    return gulp.src(config.paths.js)
         // create .map files
         .pipe(sourcemaps.init())
         // compile into bundle.min.js
@@ -43,7 +48,7 @@ gulp.task('build-js', function () {
         // write the maps files
         .pipe(sourcemaps.write())
         // write the concat file
-        .pipe(gulp.dest('./public/javascripts'))
+        .pipe(gulp.dest(config.paths.public))
 });
 
 gulp.task('build-css', function () {
@@ -51,7 +56,7 @@ gulp.task('build-css', function () {
         .pipe(sourcemaps.init())
         .pipe(minifyCss())
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest('./public/stylesheets'))
+        .pipe(gulp.dest(config.paths.css))
 });
 
 gulp.task('jade-templates', function() {
