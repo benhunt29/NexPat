@@ -1,34 +1,41 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var passport = require('passport');
+//dependencies
+const
+    express = require('express'),
+    path = require('path'),
+    favicon = require('serve-favicon'),
+    logger = require('morgan'),
+    cookieParser = require('cookie-parser'),
+    bodyParser = require('body-parser'),
+    passport = require('passport');
 
-var index = require('./routes/index');
-var register = require('./routes/api/register');
-var login = require('./routes/api/login');
-var logout = require('./routes/api/logout');
-var worldFactbook = require('./routes/api/worldFactbook');
-var userCountries = require('./routes/api/userCountries');
-var questionnaire = require('./routes/api/questionnaire');
-var worldBank = require('./routes/externalAPIs/worldBankData');
-var mediWiki = require('./routes/externalAPIs/mediWiki');
+//routes
+const
+    routes = require('./routes/index'),
+    register = require('./routes/api/register'),
+    login = require('./routes/api/login'),
+    logout = require('./routes/api/logout'),
+    worldFactbook = require('./routes/api/worldFactbook'),
+    questionnaire = require('./routes/api/questionnaire'),
+    worldBank = require('./routes/externalAPIs/worldBankData'),
+    mediWiki = require('./routes/externalAPIs/mediWiki');
 
+//db models
 var Users = require('./models/users');
 
 //Passport Strategies
-var BearerStrategy = require('passport-http-bearer');
-var LocalStrategy = require('passport-local').Strategy;
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-var GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-var GOOGLE_OAUTH_CALLBACK = process.env.GOOGLE_OAUTH_CALLBACK;
-var JwtStrategy = require('passport-jwt').Strategy;
-var opts = {};
-opts.secretOrKey = process.env.jwtSecret;
-opts.passReqToCallback = true;
+const
+    LocalStrategy = require('passport-local').Strategy,
+    GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+
+//Google oauth variables
+const
+    GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET,
+    GOOGLE_OAUTH_CALLBACK = process.env.GOOGLE_OAUTH_CALLBACK;
+var opts = {
+    secretOrKey: process.env.jwtSecret,
+    passReqToCallback: true
+};
 
 var app = express();
 
@@ -36,7 +43,6 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-// Bring Mongoose into the app
 var mongoose = require('mongoose');
 
 // Build the connection string
@@ -63,13 +69,13 @@ mongoose.connection.on('disconnected', function () {
     console.log('Mongoose default connection disconnected');
 });
 
+//middleware to use
 app.use(favicon(path.join(__dirname, 'public', './images/NextPatLogo.png')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(passport.initialize());
 
 passport.serializeUser(function (user, done) {
@@ -129,11 +135,6 @@ passport.use(new GoogleStrategy({
             } else {
                 var newGoogleUser = new Users(googleUser);
                 newGoogleUser.save(function (err, user) {
-                    //if(err) {
-                    //    res.json(401, { error: 'message' });
-                    //}else {
-                    //    res.redirect('/');
-                    //}
                     return done(err, user);
                 });
 
@@ -143,10 +144,9 @@ passport.use(new GoogleStrategy({
     }
 ));
 
-app.use('/', index);
+//Routes to use
 app.use('/api/register', register);
 app.use('/api/worldFactbook', worldFactbook);
-app.use('/api/userCountries', userCountries);
 app.use('/api/login', login);
 app.use('/api/logout', logout);
 app.use('/api/questionnaire', questionnaire);

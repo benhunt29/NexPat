@@ -4,8 +4,6 @@ var mongoose = require('mongoose');
 var Questionnaire = require('../../models/questionnaire');
 var expressJwt = require('express-jwt');
 
-
-//mongoose.collection.createIndex({"people.languages.text":"text"});
 router.get('/:username', expressJwt({secret:process.env.jwtSecret}), function(req, res, next) {
   var obj = req.params;
 
@@ -23,7 +21,6 @@ router.get('/:username', expressJwt({secret:process.env.jwtSecret}), function(re
   });
 });
 
-/* POST users listing. */
 router.post('/', expressJwt({secret:process.env.jwtSecret}),function(req, res, next) {
 
   var obj = req.body;

@@ -22,16 +22,21 @@ router.get('/:abbrev', function(req, res, next) {
       data = data[0];
       var compiledIndicators = [];
       var indicatorObj = {};
+      //start at year 2005
       var year = '2005';
+      //initialize lastId to first entry
       var lastId = data[0].indicator.id;
+      //loop through data to find latest entry
       data.forEach(function(indicator){
 
+        //push object and reset values
         if(indicator.indicator.id != lastId && Object.keys(indicatorObj).length !=0){
           compiledIndicators.push(indicatorObj);
           indicatorObj={};
           year = '2005';
         }
 
+        //if more recent entry exists, compile object to push
         if(indicator.date > year && indicator.value && indicator.value !=0){
           year = indicator.date;
           indicatorObj.indicator = indicator.indicator.value;
@@ -39,12 +44,10 @@ router.get('/:abbrev', function(req, res, next) {
           indicatorObj.year = year;
         }
 
+        //reset lastId to current entry id
         lastId = indicator.indicator.id;
-        // console.log(indicatorObj);
-
 
       });
-      //console.log(compiledIndicators);
       res.json(compiledIndicators);
     }
 
@@ -53,18 +56,6 @@ router.get('/:abbrev', function(req, res, next) {
     }
 
   });
-
-  //request('http://www.google.com', function (error, response, body) {
-  //  if (!error && response.statusCode == 200) {
-  //    console.log(body); // Show the HTML for the Google homepage.
-  //  } else if(error){
-  //    console.log(error);
-  //  }
-  //});
-
-
-
-
 
 });
 
