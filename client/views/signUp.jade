@@ -2,35 +2,36 @@ div(layout-margin layout-padding layout-align = "center center")
     div(layout="row" layout-sm="column" layout-align="center center")
         h1.md-display-3 Are you next?
     div(layout-padding)
-        form(name="signUp" ng-submit="register()")
+        form#registerForm(name="signUp" ng-submit="register()")
             div(layout="row" layout-sm="column" layout-align="center center")
-                md-input-container(flex)
+                md-input-container(flex layout-fill)
                     label Email Address
                     input(type = "email" name="email" ng-model="form.email" required)
                 div(ng-messages="signUp.email.$error")
                     div(ng-message="required")
-                md-input-container(flex)
+                md-input-container(flex layout-fill)
                     label Username
-                    input(type="text" name="username" ng-model="form.userName" required ng-minlength="4")
+                    input(type="text" name="username" ng-model="form.userName" required ng-minlength="4" ng-pattern = '/^[0-9A-Za-z_]+$/')
                     div(ng-messages="signUp.username.$error")
                         div(ng-message="minlength") Must be >3 characters!
+                        div(ng-message="pattern") Alphanumeric and underscores only
             div(layout="row" layout-sm="column" layout-align="center center")
-                md-input-container
+                md-input-container(flex layout-fill)
                     label Password
                     input(type="password" name="password" ng-model="form.password" required ng-minlength="8" ng-pattern = '/(?=.*[!@#$%^&*])(?=.*[0-9])/')
                     div(ng-messages="signUp.password.$error" style="color:maroon" role="alert")
                         div(ng-message="minlength") Must be >7 characters
                         div(ng-message="pattern") Must contain a number and a special character
-                md-input-container
+                md-input-container(flex layout-fill)
                     label Confirm Password
                     input(type="password" name="passwordConfirm" ng-model="form.passwordConfirm" required data-match="signUp.password")
                     div(ng-messages="signUp.passwordConfirm.$error" style="color:maroon" role="alert")
                         div(ng-message="match") passwords must match!
             div(layout="row" layout-sm="column" layout-align="center center")
-                md-input-container
+                md-input-container(flex layout-fill)
                     label First Name
                     input(type="text" name="firstName" ng-model="form.firstName" required)
-                md-input-container
+                md-input-container(flex layout-fill)
                     label Last Name
                     input(type="text" name="lastName" ng-model="form.lastName" required)
             div(layout="row" layout-sm="column" layout-align="center center")
