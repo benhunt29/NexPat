@@ -44,7 +44,7 @@ app.factory('questionnaire', function () {
                 answerOptions: ['Agriculture', 'Industry', 'Services']
             },
             {
-                question: 'What climate(s) would you prefer?',
+                question: 'What climate would you prefer?',
                 type: 'list',
                 answerOptions: ['Temperate', 'Mediterranean', 'Tropical', 'Arid', 'Desert', 'Maritime', 'Wet']
             },
