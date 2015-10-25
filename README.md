@@ -1,5 +1,8 @@
 # NextPat
 
+## Deployed version ##
+A deployed version of the app is currently being hosted on Heroku. You can find it [here](http://nextpat.herokuapp.com/)
+
 ## Description ##
 Next Pat is an application designed to aid those interested in moving abroad. Users are matched to countries based on their responses to a questionnaire. Currently the application is limited to Europe.
 
